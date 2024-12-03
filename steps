@@ -1,0 +1,80 @@
+
+Pipex Project Description
+
+---
+
+Project Overview
+The Pipex project challenges you to replicate a fundamental UNIX shell mechanism: the ability to use pipes to chain commands and redirect input/output. By the end of this project, you’ll have a deeper understanding of how UNIX manages inter-process communication and file redirection.
+
+---
+
+Goal
+Build a program that behaves like the following shell command:  
+< file1 cmd1 | cmd2 > file2
+
+- Redirect input from file1.
+- Execute cmd1, passing its output as input to cmd2.
+- Redirect the final output to file2.
+
+---
+
+How It Works
+1. Open the input file (file1) and output file (file2).
+2. Set up a pipe to pass the output of cmd1 as input to cmd2.
+3. Use fork() to create child processes for each command.
+4. Redirect file descriptors with dup2() to manage input/output.
+5. Execute commands with execve().
+
+---
+
+Bonus Features
+1. Multiple Pipes:
+   - Extend functionality to handle more than two commands:
+     ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2
+
+2. Here Document (<< LIMITER):
+   - Handle input from stdin until a specified LIMITER:
+     ./pipex here_doc LIMITER cmd1 cmd2 ... file
+
+---
+
+Functions to Use
+- File Operations: open(), close(), read(), write().
+- Process Control: fork(), execve(), pipe(), dup2().
+- Error Handling: perror(), strerror().
+- Memory Management: malloc(), free().
+
+---
+
+Development Workflow
+1. Plan:
+   - Understand the pipeline mechanism and break down the problem into smaller components.
+2. Build Step-by-Step:
+   - Start with basic input/output redirection.
+   - Add support for a single pipe.
+   - Gradually build for multiple commands and here_doc.
+3. Test:
+   - Use various test cases to validate correctness, error handling, and memory management.
+
+---
+
+Deliverables
+1. Executable: pipex.
+2. Source Files: All .c and .h files.
+3. Makefile: Includes targets all, clean, fclean, re, and bonus.
+
+---
+
+Usage Example
+Command:
+./pipex infile "grep foo" "wc -l" outfile
+
+Behavior:
+< infile grep foo | wc -l > outfile
+
+---
+
+Objective
+- Understand and implement inter-process communication using pipes.
+- Manage file descriptors for input/output redirection.
+- Deepen your knowledge of UNIX system calls and process control.
