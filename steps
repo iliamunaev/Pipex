@@ -9,7 +9,7 @@ The Pipex project challenges you to replicate a fundamental UNIX shell mechanism
 ---
 
 Goal
-Build a program that behaves like the following shell command:  
+Build a program that behaves like the following shell command:
 < file1 cmd1 | cmd2 > file2
 
 - Redirect input from file1.
@@ -78,3 +78,8 @@ Objective
 - Understand and implement inter-process communication using pipes.
 - Manage file descriptors for input/output redirection.
 - Deepen your knowledge of UNIX system calls and process control.
+
+to read:
+https://opensource.com/article/19/4/interprocess-communication-linux-channels
+
+
