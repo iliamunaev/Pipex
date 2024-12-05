@@ -6,86 +6,59 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/05 16:09:40 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/05 18:21:33 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "pipex.h"
 
-int main(int ac, char **av)
+void child_p(int *fd; char **av, char **envp)
 {
-    int	fd_read;
-    int	fd_write;
-    int pipe_fd[2];
-    pid_t child_1;
-    pid_t child_2;
+	int	file_read;
 
-    if (ac != 5)
-    {
-        fprintf(stderr, "Usage: %s infile cmd1 cmd2 outfile\n", av[0]);
-        return (1);
-    }
+	file_read = open(av[1], O_RDONLY);
+	if (file_read == -1)
+		error();
+	if(dup2(file_read, STDIN_FILENO) == -1 || dup2(fd[1], STDOUT_FILENO) == -1)
+		error();
+	close(fd[0]);
+	execute(av[2], envp);
+}
 
-    // Open files
-    if (!open_files(&fd_read, &fd_write, av))
-        return (2);
+void parent_p(int *fd; char **av, char **envp)
+{
+	int	file_write;
 
-    // Create the pipe
-    if (pipe(pipe_fd) == -1)
-    {
-        perror("Error creating pipe");
-        close_all(fd_read, fd_write, -1, -1);
-        return (3);
-    }
+	file_write = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);  // 0644??
+	if (file_write == -1)
+		error();
+	if(dup2(fd[0], STDIN_FILENO) == -1 || dup2(file_write, STDOUT_FILENO) == -1)
+		error();
+	close(fd[1]);
+	execute(av[3], envp);
+}
 
-    // First child: Execute cmd1
-    if (create_child(&child_1, fd_read, fd_write, pipe_fd))
-    {
-        if (child_1 == 0)
-        {
-            // Close unused pipe end
-            close(pipe_fd[0]);
-            if (dup_and_close(fd_read, pipe_fd[1]))
-            {
-                execlp(av[2], av[2], NULL);
-                perror("Error executing cmd1");
-                exit(4);
-            }
-            else
-            {
-                perror("Error duplicating file descriptors in first child");
-                exit(4);
-            }
-        }
-    }
+int	main(int ac, char **av)
+{
+	int	fd[2];
+	pid_t pid;
 
-    // Second child: Execute cmd2
-    if (create_child(&child_2, fd_read, fd_write, pipe_fd))
-    {
-        if (child_2 == 0)
-        {
-            // Close unused pipe end
-            close(pipe_fd[1]);
-            if (dup_and_close(pipe_fd[0], fd_write))
-            {
-                execlp(av[3], av[3], NULL);
-                perror("Error executing cmd2");
-                exit(5);
-            }
-            else
-            {
-                perror("Error duplicating file descriptors in second child");
-                exit(5);
-            }
-        }
-    }
+	if(ac != 5)
+		error();
 
-    // Parent process
-    close_all(fd_read, fd_write, pipe_fd[0], pipe_fd[1]);
+	if(pipe(fd) == -1)
+		error();
 
-    // Wait for both children
-    waitpid(child_1, NULL, 0);
-    waitpid(child_2, NULL, 0);
+	pid = fork();
 
-    printf("Program completed successfully\n");
-    return (0);
+	if(pid == -1)
+		error();
+
+	if(pid == 0)
+		child_p(av, envp, fd);
+
+	waitpid(pid, NULL, 0);
+	parent_p(av, envp, fd);
+
+	return (0);
 }
