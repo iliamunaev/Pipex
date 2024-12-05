@@ -1,13 +1,13 @@
 #ifndef PIPEX_H
 # define PIPEX_H
 
-#include <stdio.h> // ---------------------- delete
 #include <fcntl.h> // open()
 #include <errno.h> // perror()
-#include <string.h> // strerror()
 #include <unistd.h> // close(), dup2(), pipe(), fork()
 #include <sys/wait.h> // waitpid()
 
-int	check_open(int fd);
+void	error(void);
+void child_p(int *fd; char **av, char **envp);
+void parent_p(int *fd; char **av, char **envp);
 
 #endif // PIPEX_H
