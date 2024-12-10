@@ -6,59 +6,83 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/05 18:21:33 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/10 13:14:21 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void child_p(int *fd; char **av, char **envp)
-{
-	int	file_read;
+// PATH=/app/bin:/app/bin:/app/bin:/usr/bin:/home/imunaev-/.var/app/com.visualstudio.code/data/node_modules/bin
 
-	file_read = open(av[1], O_RDONLY);
-	if (file_read == -1)
+void child_1(int *fd, int f_read, char **av, char **envp)
+{
+
+	if(dup2(f_read, STDIN_FILENO) == -1)
 		error();
-	if(dup2(file_read, STDIN_FILENO) == -1 || dup2(fd[1], STDOUT_FILENO) == -1)
+	if(dup2(fd[1], STDOUT_FILENO) == -1)
 		error();
 	close(fd[0]);
-	execute(av[2], envp);
+
+	execute_command(av[2], envp);
 }
 
-void parent_p(int *fd; char **av, char **envp)
+void child_2(int *fd, int f_write, char **av, char **envp)
 {
-	int	file_write;
 
-	file_write = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);  // 0644??
-	if (file_write == -1)
+	if(dup2(fd[0], STDIN_FILENO) == -1)
 		error();
-	if(dup2(fd[0], STDIN_FILENO) == -1 || dup2(file_write, STDOUT_FILENO) == -1)
+	if(dup2(f_write, STDOUT_FILENO) == -1)
 		error();
 	close(fd[1]);
-	execute(av[3], envp);
+
+	execute_command(av[3], envp);
 }
 
-int	main(int ac, char **av)
+
+void pipex(int f_read, int f_write, char **av, char **envp)
 {
 	int	fd[2];
-	pid_t pid;
-
-	if(ac != 5)
-		error();
+	pid_t child1;
+	pid_t child2;
 
 	if(pipe(fd) == -1)
 		error();
 
-	pid = fork();
+	child1 = fork();
+	if (child1 == -1)
+		error();
+	if(child1 == 0)
+		child_1(fd, f_read, av, envp);
 
-	if(pid == -1)
+	child2 = fork();
+	if (child2 == -1)
+		error();
+	if(child2 == 0)
+		child_2(fd, f_write, av, envp);
+
+	close(fd[0]);
+	close(fd[1]);
+
+	waitpid(child1, NULL, 0);
+	waitpid(child2, NULL, 0);
+}
+
+int	main(int ac, char **av, char **envp)
+{
+	int	f_read;
+	int	f_write;
+
+	if (ac != 5)
 		error();
 
-	if(pid == 0)
-		child_p(av, envp, fd);
+	f_read = open(av[1], O_RDONLY);
+	f_write = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);  // 0644??
 
-	waitpid(pid, NULL, 0);
-	parent_p(av, envp, fd);
+	if(f_read == -1)
+		error();
+	if(f_write == -1)
+		error();
 
+	pipex(f_read, f_write, av, envp);
 	return (0);
 }
