@@ -6,12 +6,11 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/11 16:52:56 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/11 23:00:06 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h> ////// delete!!!!
 
 /**
  * @brief Executes a command by parsing the input string,
@@ -27,34 +26,42 @@
  */
 void	execute_command(char *av, char **envp)
 {
-	int		success;
-	int		i;
 	char	*path;
 	char	**cmd;
-	//char	*command_name;
+	char	*command_name;
+	int		i;
 
 	cmd = ft_split(av, ' ');
-	printf("TEST\n");
-
-	printf("cmd: %c\n", av[2]);
+	if (!cmd || !cmd[0])
+		error_exit("Invalid command", 127);
 	path = get_path(cmd[0], envp);
+	command_name = ft_strdup(cmd[0]);
 	i = 0;
 	if (!path)
 	{
-		//command_name = av[2];
 		while (cmd[i])
 		{
 			free(cmd[i]);
 			i++;
 		}
 		free(cmd);
-		ft_putstr_fd("zsh: command not found: ", STDERR_FILENO);
-		ft_putendl_fd(av[2], STDERR_FILENO);
+		free(command_name);
 		exit(127);
 	}
-	success = execve(path, cmd, envp);
-	if (success == -1)
-		error();
+	i = 0;
+	if (execve(path, cmd, envp) == -1)
+	{
+		perror("execve failed");
+		free(path);
+		free(command_name);
+		while (cmd[i])
+		{
+			free(cmd[i]);
+			i++;
+		}
+		free(cmd);
+		exit(127);
+	}
 }
 
 /**
@@ -120,6 +127,8 @@ void	pipex(int f_read, int f_write, char **av, char **envp)
 	int		fd[2];
 	pid_t	child1;
 	pid_t	child2;
+	int		status1;
+	int		status2;
 
 	if (pipe(fd) == -1)
 		error();
@@ -135,8 +144,9 @@ void	pipex(int f_read, int f_write, char **av, char **envp)
 		child_2(fd, f_write, av, envp);
 	close(fd[0]);
 	close(fd[1]);
-	waitpid(child1, NULL, 0);
-	waitpid(child2, NULL, 0);
+	waitpid(child1, &status1, 0);
+	waitpid(child2, &status2, 0);
+	handle_exit_status(status1, status2);
 }
 
 /**
@@ -167,9 +177,13 @@ int	main(int ac, char **av, char **envp)
 	if (f_read == -1 || f_write == -1)
 	{
 		if (f_read == -1)
+		{
+			if (errno == EACCES)
+				error_exit(av[1], 0);
 			error_exit(av[1], 1);
+		}
 		if (f_write == -1)
-			error_exit(av[2], 1);
+			error_exit("Error opening output file", 1);
 	}
 	pipex(f_read, f_write, av, envp);
 	return (0);

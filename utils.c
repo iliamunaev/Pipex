@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/11 16:20:36 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/11 22:55:46 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,15 @@ void	error_exit(const char *msg, int status)
 {
 	if (msg != NULL)
 		perror(msg);
-	if (status == 0)
-		exit(EXIT_SUCCESS);
-	else if (status == 1)
-		exit(EXIT_SUCCESS);
-	else
-		exit(status);
+	exit(status);
+}
+
+void	handle_exit_status(int status1, int status2)
+{
+	if (WIFEXITED(status2))
+		exit(WEXITSTATUS(status2));
+	else if (WIFEXITED(status1))
+		exit(WEXITSTATUS(status1));
 }
 
 /**
@@ -77,7 +80,22 @@ static void	free_paths(char **paths)
  *
  * @note This function should only be used internally within this source file.
  */
-static char	*find_command_in_paths(char **paths, char *cmd)
+  char	*get_path(char *cmd, char **envp)
+ {
+	char	**paths;
+	char	*path;
+
+	paths = get_path_values(envp);
+	if (!paths)
+		return (NULL);
+	path = find_command_in_paths(paths, cmd);
+	if (path)
+		return (path);
+	free_paths(paths);
+	return (NULL);
+}
+
+char	*find_command_in_paths(char **paths, char *cmd)
 {
 	int		i;
 	char	*path;
@@ -144,17 +162,5 @@ char	**get_path_values(char **envp)
  *
  * @return The full path to the executable if found; otherwise, `NULL`.
  */
-char	*get_path(char *cmd, char **envp)
-{
-	char	**paths;
-	char	*path;
 
-	paths = get_path_values(envp);
-	if (!paths)
-		return (NULL);
-	path = find_command_in_paths(paths, cmd);
-	if (path)
-		return (path);
-	free_paths(paths);
-	return (NULL);
-}
+
