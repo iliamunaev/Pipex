@@ -6,11 +6,12 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/11 09:15:04 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/11 16:52:56 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <stdio.h> ////// delete!!!!
 
 /**
  * @brief Executes a command by parsing the input string,
@@ -30,19 +31,26 @@ void	execute_command(char *av, char **envp)
 	int		i;
 	char	*path;
 	char	**cmd;
+	//char	*command_name;
 
 	cmd = ft_split(av, ' ');
+	printf("TEST\n");
+
+	printf("cmd: %c\n", av[2]);
 	path = get_path(cmd[0], envp);
 	i = 0;
 	if (!path)
 	{
+		//command_name = av[2];
 		while (cmd[i])
 		{
 			free(cmd[i]);
 			i++;
 		}
 		free(cmd);
-		error();
+		ft_putstr_fd("zsh: command not found: ", STDERR_FILENO);
+		ft_putendl_fd(av[2], STDERR_FILENO);
+		exit(127);
 	}
 	success = execve(path, cmd, envp);
 	if (success == -1)
@@ -153,13 +161,16 @@ int	main(int ac, char **av, char **envp)
 	if (ac != 5)
 		error();
 	if (*av[2] == '\0' || *av[3] == '\0')
-		error();
+		error_exit("Error opening input file", 1);
 	f_read = open(av[1], O_RDONLY);
-	if (f_read == -1)
-		error();
 	f_write = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (f_write == -1)
-		error();
+	if (f_read == -1 || f_write == -1)
+	{
+		if (f_read == -1)
+			error_exit(av[1], 1);
+		if (f_write == -1)
+			error_exit(av[2], 1);
+	}
 	pipex(f_read, f_write, av, envp);
 	return (0);
 }

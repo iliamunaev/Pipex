@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/11 09:27:38 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/11 16:20:36 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,20 @@
  */
 void	error(void)
 {
-	perror("Error");
+	strerror(errno);
 	exit(EXIT_FAILURE);
+}
+
+void	error_exit(const char *msg, int status)
+{
+	if (msg != NULL)
+		perror(msg);
+	if (status == 0)
+		exit(EXIT_SUCCESS);
+	else if (status == 1)
+		exit(EXIT_SUCCESS);
+	else
+		exit(status);
 }
 
 /**
