@@ -6,11 +6,36 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/11 08:31:47 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/11 09:07:06 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+void	execute_command(char *av, char **envp)
+{
+	int		success;
+	int		i;
+	char	*path;
+	char	**cmd;
+
+	cmd = ft_split(av, ' ');
+	path = get_path(cmd[0], envp);
+	i = 0;
+	if (!path)
+	{
+		while (cmd[i])
+		{
+			free(cmd[i]);
+			i++;
+		}
+		free(cmd);
+		error();
+	}
+	success = execve(path, cmd, envp);
+	if (success == -1)
+		error();
+}
 
 void	child_1(int *fd, int f_read, char **av, char **envp)
 {

@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/11 07:50:31 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/11 09:07:20 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,39 @@ void	error(void)
 {
 	perror("Error");
 	exit(EXIT_FAILURE);
+}
+
+static void	free_paths(char **paths)
+{
+	int	i;
+
+	i = 0;
+	while (paths[i])
+		free(paths[i++]);
+	free(paths);
+}
+
+static char	*find_command_in_paths(char **paths, char *cmd)
+{
+	int		i;
+	char	*path;
+	char	*tmp;
+
+	i = 0;
+	while (paths[i])
+	{
+		tmp = ft_strjoin(paths[i], "/");
+		path = ft_strjoin(tmp, cmd);
+		free(tmp);
+		if (access(path, F_OK) == 0)
+		{
+			free_paths(paths);
+			return (path);
+		}
+		free(path);
+		i++;
+	}
+	return (NULL);
 }
 
 char	**get_path_values(char **envp)
@@ -38,56 +71,13 @@ char	*get_path(char *cmd, char **envp)
 {
 	char	**paths;
 	char	*path;
-	char	*path_to_complite;
-	int		i;
 
 	paths = get_path_values(envp);
 	if (!paths)
 		return (NULL);
-	i = 0;
-	while (paths[i])
-	{
-		path_to_complite = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(path_to_complite, cmd);
-		free(path_to_complite);
-		if (access(path, F_OK) == 0)
-		{
-			while (paths[i])
-				free(paths[i++]);
-			free(paths);
-			return (path);
-		}
-		free(path);
-		i++;
-	}
-	i = 0;
-	while (paths[i])
-		free(paths[i++]);
-	free(paths);
+	path = find_command_in_paths(paths, cmd);
+	if (path)
+		return (path);
+	free_paths(paths);
 	return (NULL);
-}
-
-void	execute_command(char *av, char **envp)
-{
-	int		success;
-	int		i;
-	char	*path;
-	char	**cmd;
-
-	cmd = ft_split(av, ' ');
-	path = get_path(cmd[0], envp);
-	i = 0;
-	if (!path)
-	{
-		while (cmd[i])
-		{
-			free(cmd[i]);
-			i++;
-		}
-		free(cmd);
-		error();
-	}
-	success = execve(path, cmd, envp);
-	if (success == -1)
-		error();
 }
