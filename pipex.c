@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/11 23:00:06 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/12 16:24:52 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,39 +28,24 @@ void	execute_command(char *av, char **envp)
 {
 	char	*path;
 	char	**cmd;
-	char	*command_name;
-	int		i;
 
 	cmd = ft_split(av, ' ');
 	if (!cmd || !cmd[0])
 		error_exit("Invalid command", 127);
 	path = get_path(cmd[0], envp);
-	command_name = ft_strdup(cmd[0]);
-	i = 0;
 	if (!path)
 	{
-		while (cmd[i])
-		{
-			free(cmd[i]);
-			i++;
-		}
-		free(cmd);
-		free(command_name);
+		ft_putstr_fd(cmd[0], STDERR_FILENO);
+		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+		free_arr_memory(cmd);
 		exit(127);
 	}
-	i = 0;
 	if (execve(path, cmd, envp) == -1)
 	{
-		perror("execve failed");
+		perror(cmd[0]);
 		free(path);
-		free(command_name);
-		while (cmd[i])
-		{
-			free(cmd[i]);
-			i++;
-		}
-		free(cmd);
-		exit(127);
+		free_arr_memory(cmd);
+		error_exit(NULL, 127);
 	}
 }
 
@@ -79,9 +64,9 @@ void	execute_command(char *av, char **envp)
 void	child_1(int *fd, int f_read, char **av, char **envp)
 {
 	if (dup2(f_read, STDIN_FILENO) == -1)
-		error();
+		exit(EXIT_FAILURE);
 	if (dup2(fd[1], STDOUT_FILENO) == -1)
-		error();
+		exit(EXIT_FAILURE);
 	close (fd[0]);
 	execute_command(av[2], envp);
 }
@@ -102,9 +87,9 @@ void	child_1(int *fd, int f_read, char **av, char **envp)
 void	child_2(int *fd, int f_write, char **av, char **envp)
 {
 	if (dup2(fd[0], STDIN_FILENO) == -1)
-		error();
+		exit(EXIT_FAILURE);
 	if (dup2(f_write, STDOUT_FILENO) == -1)
-		error();
+		exit(EXIT_FAILURE);
 	close (fd[1]);
 	execute_command(av[3], envp);
 }
@@ -131,15 +116,15 @@ void	pipex(int f_read, int f_write, char **av, char **envp)
 	int		status2;
 
 	if (pipe(fd) == -1)
-		error();
+		exit(EXIT_FAILURE);
 	child1 = fork();
 	if (child1 == -1)
-		error();
+		exit(EXIT_FAILURE);
 	if (child1 == 0)
 		child_1(fd, f_read, av, envp);
 	child2 = fork();
 	if (child2 == -1)
-		error();
+		exit(EXIT_FAILURE);
 	if (child2 == 0)
 		child_2(fd, f_write, av, envp);
 	close(fd[0]);
@@ -169,7 +154,7 @@ int	main(int ac, char **av, char **envp)
 	int	f_write;
 
 	if (ac != 5)
-		error();
+		error_exit("Invalid command input", 1);
 	if (*av[2] == '\0' || *av[3] == '\0')
 		error_exit("Error opening input file", 1);
 	f_read = open(av[1], O_RDONLY);
@@ -180,10 +165,10 @@ int	main(int ac, char **av, char **envp)
 		{
 			if (errno == EACCES)
 				error_exit(av[1], 0);
-			error_exit(av[1], 1);
+			error_exit(av[1], EXIT_FAILURE);
 		}
 		if (f_write == -1)
-			error_exit("Error opening output file", 1);
+			error_exit(av[4], EXIT_FAILURE);
 	}
 	pipex(f_read, f_write, av, envp);
 	return (0);

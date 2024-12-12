@@ -6,7 +6,7 @@
 #    By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/11 07:28:17 by imunaev-          #+#    #+#              #
-#    Updated: 2024/12/11 08:08:46 by imunaev-         ###   ########.fr        #
+#    Updated: 2024/12/12 16:18:30 by imunaev-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ LIBFT       = $(LIBFT_DIR)/libft.a
 INCLUDES    = -I./ -I$(LIBFT_DIR)
 
 # SOURCES
-SRCS        = pipex.c utils.c
+SRCS        = pipex.c utils.c error_handle_utils.c
 OBJS        = $(SRCS:.c=.o)
 
 # RULES

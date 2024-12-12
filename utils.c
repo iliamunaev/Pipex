@@ -6,53 +6,22 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/11 22:55:46 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/12 16:25:40 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
 /**
- * @brief Handles errors by printing an error message and exiting the program.
- *
- * This function uses `perror` to display the last error encountered during
- * a system or library call. After displaying the error message, it terminates
- * the program with a failure status.
- *
- * @return This function does not return as it exits the program.
- */
-void	error(void)
-{
-	strerror(errno);
-	exit(EXIT_FAILURE);
-}
-
-void	error_exit(const char *msg, int status)
-{
-	if (msg != NULL)
-		perror(msg);
-	exit(status);
-}
-
-void	handle_exit_status(int status1, int status2)
-{
-	if (WIFEXITED(status2))
-		exit(WEXITSTATUS(status2));
-	else if (WIFEXITED(status1))
-		exit(WEXITSTATUS(status1));
-}
-
-/**
  * @brief Frees an array of strings allocated dynamically.
  *
- * This static helper function iterates through each string in the `paths` array,
+ * This helper function iterates through each string in an array,
  * frees each individual string, and then frees the array itself.
  *
  * @param paths A null-terminated array of strings to be freed.
- *
- * @note This function should only be used internally within this source file.
  */
-static void	free_paths(char **paths)
+
+void	free_arr_memory(char **paths)
 {
 	int	i;
 
@@ -80,8 +49,9 @@ static void	free_paths(char **paths)
  *
  * @note This function should only be used internally within this source file.
  */
-  char	*get_path(char *cmd, char **envp)
- {
+
+char	*get_path(char *cmd, char **envp)
+{
 	char	**paths;
 	char	*path;
 
@@ -91,30 +61,7 @@ static void	free_paths(char **paths)
 	path = find_command_in_paths(paths, cmd);
 	if (path)
 		return (path);
-	free_paths(paths);
-	return (NULL);
-}
-
-char	*find_command_in_paths(char **paths, char *cmd)
-{
-	int		i;
-	char	*path;
-	char	*tmp;
-
-	i = 0;
-	while (paths[i])
-	{
-		tmp = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(tmp, cmd);
-		free(tmp);
-		if (access(path, F_OK) == 0)
-		{
-			free_paths(paths);
-			return (path);
-		}
-		free(path);
-		i++;
-	}
+	free_arr_memory(paths);
 	return (NULL);
 }
 
@@ -131,6 +78,7 @@ char	*find_command_in_paths(char **paths, char *cmd)
  * @return A dynamically allocated array of directory paths if
  * `PATH` is found and split successfully; otherwise, `NULL`.
  */
+
 char	**get_path_values(char **envp)
 {
 	char	**paths;
@@ -163,4 +111,25 @@ char	**get_path_values(char **envp)
  * @return The full path to the executable if found; otherwise, `NULL`.
  */
 
+char	*find_command_in_paths(char **paths, char *cmd)
+{
+	int		i;
+	char	*path;
+	char	*tmp;
 
+	i = 0;
+	while (paths[i])
+	{
+		tmp = ft_strjoin(paths[i], "/");
+		path = ft_strjoin(tmp, cmd);
+		free(tmp);
+		if (access(path, F_OK) == 0)
+		{
+			free_arr_memory(paths);
+			return (path);
+		}
+		free(path);
+		i++;
+	}
+	return (NULL);
+}
