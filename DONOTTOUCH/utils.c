@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/12 21:18:05 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/12 16:25:40 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,6 @@
  *
  * @param paths A null-terminated array of strings to be freed.
  */
-
-void	cleanup_pipex(t_pipex *ctx)
-{
-    if (ctx->infile > 0)
-        close(ctx->infile);
-    if (ctx->outfile > 0)
-        close(ctx->outfile);
-    if (ctx->fd[0] > 0)
-        close(ctx->fd[0]);
-    if (ctx->fd[1] > 0)
-        close(ctx->fd[1]);
-}
 
 void	free_arr_memory(char **paths)
 {
