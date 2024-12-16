@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 16:17:54 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/13 13:51:05 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/15 22:04:48 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ int	get_exit_status(int status, int update)
 {
 	static int exit_status = 0;
 
-	if (update) {
+	if (update)
+	{
 		if (WIFEXITED(status))
 			exit_status = WEXITSTATUS(status);
 		else

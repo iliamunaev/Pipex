@@ -178,11 +178,11 @@ chmod 000 outfiles/outfile_without_permissions
 **Description**:
 **Real Terminal**:
 ```bash
-< infile/basic.txt ls-l | grepzao x > outoutfiles/outfile
+< infiles/basic.txt ls-l | grepzao x > outfiles/outfile
 ```
 **Pipex**:
 ```bash
-./pipex infile/basic.txt "ls-l" "grepzao x" outoutfiles/outfile
+./pipex infiles/basic.txt "ls-l" "grepzao x" outfiles/outfile
 ```
 
 

@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/13 15:45:31 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/15 22:38:05 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,15 @@ void    execute_command(char *av, t_pipex *ctx)
     cmd.path = get_path(cmd.cmd, ctx->envp);
 	if (!cmd.path)
 	{
-
-		//ft_putstr_fd(cmd.cmd, STDERR_FILENO);
-		//ft_putstr_fd(": command not found\n", STDERR_FILENO);
-		//free_arr_memory(cmd.args);
+		ft_putstr_fd(cmd.cmd, STDERR_FILENO);
+		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+		free_arr_memory(cmd.args);
 		//exit(127); // Command not found
-        foo();
-
+        //foo();
 	}
 
 	if (execve(cmd.path, cmd.args, ctx->envp) == -1)
 	{
-
-
 		//perror(cmd.cmd);
         foo();
 		free(cmd.path);
@@ -122,7 +118,9 @@ void    pipex(t_pipex *ctx)
 
    	waitpid(pid_child1, &ctx->status1, 0);
    	waitpid(pid_child2, &ctx->status2, 0);
-    handle_exit_status(ctx->status1, ctx->status2);
+	get_exit_status(ctx->status2, 1); /// START FROM HERE
+
+   // handle_exit_status(ctx->status1, ctx->status2);
 }
 
 void    init_pipex(t_pipex *ctx, int argc, char **argv, char **envp)
