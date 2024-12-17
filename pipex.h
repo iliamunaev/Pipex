@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 17:22:35 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 21:03:52 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 23:03:23 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,7 @@ void	execute_command(char *av, t_pipex *ctx);
 void	cleanup_pipex(t_pipex *ctx);
 
 // error handlers
-void	error_exit(const char *msg, int status);
-int		get_exit_status(int status, int update);
-void	program_exit(void);
+int		update_exit_status(int status, int update);
 
 // memory leak handlers
 void	free_arr_memory(char **paths);

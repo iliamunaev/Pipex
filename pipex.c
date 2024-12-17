@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 20:58:10 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 23:00:22 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,11 @@ void	child_1(t_pipex *ctx)
 		exit(EXIT_FAILURE);
 	if (ctx->fd[0] >= 0)
 		close(ctx->fd[0]);
+	if (*ctx->av[2] == '\0')
+	{
+		perror("Error: Empty command provided.\n");
+		exit(EXIT_FAILURE);
+	}
 	execute_command(ctx->av[2], ctx);
 }
 
@@ -31,6 +36,11 @@ void	child_2(t_pipex *ctx)
 		exit(EXIT_FAILURE);
 	if (ctx->fd[1] >= 0)
 		close(ctx->fd[1]);
+	if (*ctx->av[3] == '\0')
+	{
+		perror("Error: Empty command provided.\n");
+		exit(EXIT_FAILURE);
+	}
 	execute_command(ctx->av[3], ctx);
 }
 
@@ -41,26 +51,32 @@ void	pipex(t_pipex *ctx)
 
 	pid_child1 = fork();
 	if (pid_child1 == -1)
-		error_exit("Fork failed for child 1", EXIT_FAILURE);
+	{
+		perror("Fork failed for child 1");
+		exit(EXIT_FAILURE);
+	}
 	if (pid_child1 == 0)
 		child_1(ctx);
 	pid_child2 = fork();
 	if (pid_child2 == -1)
-		error_exit("Fork failed for child 2", EXIT_FAILURE);
+	{
+		perror("Fork failed for child 2");
+		exit(EXIT_FAILURE);
+	}
 	if (pid_child2 == 0)
 		child_2(ctx);
 	close(ctx->fd[0]);
 	close(ctx->fd[1]);
 	waitpid(pid_child1, &ctx->status1, 0);
 	waitpid(pid_child2, &ctx->status2, 0);
-	get_exit_status(ctx->status2, 1);
+	update_exit_status(ctx->status2, 1);
 }
 
 void	init_pipex(t_pipex *ctx, int argc, char **argv, char **envp)
 {
 	if (argc != 5)
 	{
-		ft_putstr_fd("Invalid number of arguments\n", STDERR_FILENO);
+		perror("Invalid number of arguments\n");
 		exit(EXIT_FAILURE);
 	}
 	ctx->argc = argc;
@@ -68,21 +84,21 @@ void	init_pipex(t_pipex *ctx, int argc, char **argv, char **envp)
 	ctx->envp = envp;
 	ctx->infile = open(argv[1], O_RDONLY);
 	if (ctx->infile == -1)
-	{
-		if (errno == ENOENT)
-			error_exit(argv[1], EXIT_FAILURE);
-		if (errno == EACCES)
-			error_exit(argv[1], EXIT_FAILURE);
-	}
+			perror(argv[1]);
 	ctx->outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (ctx->outfile == -1)
 	{
 		if (errno == EACCES)
-			error_exit(argv[4], 126);
-		error_exit(argv[4], EXIT_FAILURE);
+		{
+			perror(argv[4]);
+			update_exit_status(126, 1);
+		}
 	}
 	if (pipe(ctx->fd) == -1)
-		error_exit("Pipe creation failed", EXIT_FAILURE);
+	{
+		perror("Pipe creation failed");
+		exit(EXIT_FAILURE);
+	}
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -92,5 +108,5 @@ int	main(int argc, char **argv, char **envp)
 	init_pipex(&ctx, argc, argv, envp);
 	pipex(&ctx);
 	cleanup_pipex(&ctx);
-	program_exit();
+	exit(update_exit_status(0, 0));
 }

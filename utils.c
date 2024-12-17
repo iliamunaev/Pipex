@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 21:01:23 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 21:42:06 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,29 +80,23 @@ void	execute_command(char *av, t_pipex *ctx)
 {
 	t_command	cmd;
 
-	if (*av == '\0')
-	{
-		fprintf(stderr, "Error: Empty command provided.\n");
-		exit(EXIT_FAILURE);
-	}
 	cmd.args = ft_split(av, ' ');
 	if (!cmd.args || !cmd.args[0])
 	{
-		ft_putstr_fd("Command '' not found\n", STDERR_FILENO);
+		perror("Command '' not found\n");
 		exit(127);
 	}
 	cmd.cmd = cmd.args[0];
 	cmd.path = get_path(cmd.cmd, ctx->envp);
 	if (!cmd.path)
 	{
-		ft_putstr_fd(cmd.cmd, STDERR_FILENO);
-		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+		perror(cmd.cmd);
+		perror(": command not found\n");
 		free_arr_memory(cmd.args);
 		exit(127);
 	}
 	if (execve(cmd.path, cmd.args, ctx->envp) == -1)
 	{
-		perror(cmd.cmd);
 		free(cmd.path);
 		free_arr_memory(cmd.args);
 		if (errno == EACCES)
