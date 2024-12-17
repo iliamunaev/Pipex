@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 17:22:35 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 23:34:47 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 23:57:36 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,25 @@
 # define PIPEX_H
 
 // Libraries
-# include <errno.h> // errno
-# include <stdlib.h> // free, exit
-# include <unistd.h> // write, fork, pipe, execve, dup2, close
-# include <fcntl.h> // open
-# include <stdio.h> // perror
-# include <sys/wait.h> // waitpid
+# include <errno.h>		// errno
+# include <stdlib.h>	// free, exit
+# include <unistd.h>	// write, fork, pipe, execve, dup2, close
+# include <fcntl.h>		// open
+# include <stdio.h>		// perror
+# include <sys/wait.h>	// waitpid
 # include "libft/libft.h"
 
 // Structures
 typedef struct s_pipex
 {
-	int		fd[2]; // Pipe file descriptors (read and write ends)
-	int		infile; // File descriptor for the input file
-	int		outfile; // File descriptor for the output file
-	char	**envp; // Environment variables
-	char	**av; // Command-line arguments
-	int		status1; // Exit status for child 1
-	int		status2; // Exit status for child 2
-	int		argc; // Argument count
+	int		fd[2];		// Pipe file descriptors (read and write ends)
+	int		infile;		// File descriptor for the input file
+	int		outfile;	// File descriptor for the output file
+	char	**envp;		// Environment variables
+	char	**av;		// Command-line arguments
+	int		status1;	// Exit status for child 1
+	int		status2;	// Exit status for child 2
+	int		argc;		// Argument count
 }	t_pipex;
 
 typedef struct s_command

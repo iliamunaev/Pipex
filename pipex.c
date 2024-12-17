@@ -6,12 +6,20 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 23:42:36 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 23:48:21 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
+/**
+ * @brief Executes the first child process.
+ *
+ * Redirects stdin to infile and stdout to the pipe write end.
+ * Closes unnecessary file descriptors and executes the first command.
+ *
+ * @param ctx The pipex context containing file descriptors and arguments.
+ */
 void	child_1(t_pipex *ctx)
 {
 	if (dup2(ctx->infile, STDIN_FILENO) == -1)
@@ -25,6 +33,14 @@ void	child_1(t_pipex *ctx)
 	execute_command(ctx->av[2], ctx);
 }
 
+/**
+ * @brief Executes the second child process.
+ *
+ * Redirects stdin to the pipe read end and stdout to outfile.
+ * Closes unnecessary file descriptors and executes the second command.
+ *
+ * @param ctx The pipex context containing file descriptors and arguments.
+ */
 void	child_2(t_pipex *ctx)
 {
 	if (dup2(ctx->fd[0], STDIN_FILENO) == -1)
@@ -38,6 +54,15 @@ void	child_2(t_pipex *ctx)
 	execute_command(ctx->av[3], ctx);
 }
 
+/**
+ * @brief Manages the pipex process flow.
+ *
+ * Forks two child processes to execute two commands in a pipeline.
+ * Closes unused file descriptors and waits for both child processes.
+ *
+ * @param ctx The pipex context containing file descriptors and arguments.
+ * @return The exit status of the second child process.
+ */
 int	pipex(t_pipex *ctx)
 {
 	pid_t	pid_child1;
@@ -60,6 +85,17 @@ int	pipex(t_pipex *ctx)
 	return (exit_status(ctx->status2));
 }
 
+/**
+ * @brief Initializes the pipex context.
+ *
+ * Validates arguments, opens infile and outfile, and creates a pipe.
+ * Handles errors for invalid arguments, file operations, and pipe creation.
+ *
+ * @param ctx  The pipex context to initialize.
+ * @param argc The argument count.
+ * @param argv The argument vector.
+ * @param envp The environment variables.
+ */
 void	init_pipex(t_pipex *ctx, int argc, char **argv, char **envp)
 {
 	if (argc != 5)
@@ -80,6 +116,17 @@ void	init_pipex(t_pipex *ctx, int argc, char **argv, char **envp)
 		perror_n_exit("Pipe creation failed\n", EXIT_FAILURE);
 }
 
+/**
+ * @brief The entry point of the pipex program.
+ *
+ * Initializes the pipex context, manages the pipeline execution,
+ * cleans up resources, and exits with the appropriate status code.
+ *
+ * @param argc The argument count.
+ * @param argv The argument vector.
+ * @param envp The environment variables.
+ * @return Returns the exit status of the second child process.
+ */
 int	main(int argc, char **argv, char **envp)
 {
 	t_pipex	ctx;
