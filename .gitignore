@@ -54,4 +54,4 @@ dkms.conf
 *.pdf
 1_tester/
 2_tester/
-3_tester
+3_tester/
