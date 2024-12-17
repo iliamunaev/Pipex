@@ -6,21 +6,11 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 21:42:06 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 23:41:24 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-void	free_arr_memory(char **arr)
-{
-	int	i;
-
-	i = 0;
-	while (arr[i])
-		free(arr[i++]);
-	free(arr);
-}
 
 char	*get_path(char *cmd, char **envp)
 {
@@ -82,18 +72,14 @@ void	execute_command(char *av, t_pipex *ctx)
 
 	cmd.args = ft_split(av, ' ');
 	if (!cmd.args || !cmd.args[0])
-	{
-		perror("Command '' not found\n");
-		exit(127);
-	}
+		perror_n_exit("Command '' not found\n", 127);
 	cmd.cmd = cmd.args[0];
 	cmd.path = get_path(cmd.cmd, ctx->envp);
 	if (!cmd.path)
 	{
 		perror(cmd.cmd);
-		perror(": command not found\n");
 		free_arr_memory(cmd.args);
-		exit(127);
+		perror_n_exit(": command not found\n", 127);
 	}
 	if (execve(cmd.path, cmd.args, ctx->envp) == -1)
 	{

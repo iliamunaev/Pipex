@@ -6,24 +6,28 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 16:17:54 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 23:03:29 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 23:43:49 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	update_exit_status(int status, int update)
+int	exit_status(int status)
 {
-	static int	exit_status = 0;
+	int	exit_status;
 
-	if (update)
-	{
-		if (WIFEXITED(status))
-			exit_status = WEXITSTATUS(status);
-		else
-			exit_status = status;
-	}
+	if (WIFEXITED(status))
+		exit_status = WEXITSTATUS(status);
+	else
+		exit_status = status;
 	return (exit_status);
+}
+
+int	perror_n_exit(char *msg, int e)
+{
+	if (msg)
+		perror(msg);
+	exit(e);
 }
 
 void	cleanup_pipex(t_pipex *ctx)
@@ -36,4 +40,14 @@ void	cleanup_pipex(t_pipex *ctx)
 		close(ctx->fd[0]);
 	if (ctx->fd[1] > 0)
 		close(ctx->fd[1]);
+}
+
+void	free_arr_memory(char **arr)
+{
+	int	i;
+
+	i = 0;
+	while (arr[i])
+		free(arr[i++]);
+	free(arr);
 }

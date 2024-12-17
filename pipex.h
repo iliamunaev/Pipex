@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 17:22:35 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 23:03:23 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 23:34:47 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,17 +44,18 @@ typedef struct s_command
 
 // pipe creators and executors
 void	init_pipex(t_pipex *ctx, int argc, char **argv, char **envp);
-void	pipex(t_pipex *ctx);
+int		pipex(t_pipex *ctx);
 void	child_1(t_pipex *ctx);
 void	child_2(t_pipex *ctx);
 void	execute_command(char *av, t_pipex *ctx);
-void	cleanup_pipex(t_pipex *ctx);
 
 // error handlers
-int		update_exit_status(int status, int update);
+int		exit_status(int status);
+int		perror_n_exit(char *msg, int e);
 
 // memory leak handlers
 void	free_arr_memory(char **paths);
+void	cleanup_pipex(t_pipex *ctx);
 
 // cmd path finder
 char	*get_path(char *cmd, char **envp);
