@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 16:17:54 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 12:33:05 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 17:33:37 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	error_exit(const char *msg, int status)
 	if (msg != NULL)
 		perror(msg); // Prints the system error message to stderr
 	get_exit_status(status, 1); // Update exit status
-	exit(get_exit_status(0, 0)); // Exit with the updated status
+	//exit(get_exit_status(0, 0)); // Exit with the updated status
 }
 
 /*

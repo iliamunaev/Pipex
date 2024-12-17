@@ -6,86 +6,69 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 12:39:24 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 18:35:15 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void    execute_command(char *av, t_pipex *ctx)
+void	execute_command(char *av, t_pipex *ctx)
 {
-    t_command cmd;
+	t_command cmd;
 
-    cmd.args = ft_split(av, ' ');
-    if (!cmd.args || !cmd.args[0])
-        error_exit("Invalid command", 127);
-        //foo();
-
-    cmd.cmd = cmd.args[0];
-    printf("CMD: %s\n", cmd.cmd);
-
-    cmd.path = get_path(cmd.cmd, ctx->envp);
+	if (*av == '\0')
+	{
+		fprintf(stderr, "Error: Empty command provided.\n");
+		exit(EXIT_FAILURE);
+	}
+	cmd.args = ft_split(av, ' ');
+	if (!cmd.args || !cmd.args[0])
+	{
+		ft_putstr_fd("Command '' not found\n", STDERR_FILENO);
+		exit(127);
+	}
+	cmd.cmd = cmd.args[0];
+	cmd.path = get_path(cmd.cmd, ctx->envp);
 	if (!cmd.path)
 	{
 		ft_putstr_fd(cmd.cmd, STDERR_FILENO);
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		free_arr_memory(cmd.args);
-
-		exit(127); // Command not found
+		exit(127);
 	}
-
-    if (execve(cmd.path, cmd.args, ctx->envp) == -1)
-    {
-        perror(cmd.cmd);
-        foo();
-        free(cmd.path);
-        free_arr_memory(cmd.args);
-        if (errno == EACCES)
-        {
-            exit(126);
-        }
-        else
-        {
-            exit(EXIT_FAILURE);
-        }
-    }
-
-
-
+	if (execve(cmd.path, cmd.args, ctx->envp) == -1)
+	{
+		perror(cmd.cmd);
+		free(cmd.path);
+		free_arr_memory(cmd.args);
+		if (errno == EACCES)
+			exit(126);
+		else
+			exit(EXIT_FAILURE);
+	}
 }
 
-void    child_1(t_pipex *ctx)
+void	child_1(t_pipex *ctx)
 {
-    if (dup2(ctx->infile, STDIN_FILENO) == -1)
-    {
-        exit(EXIT_FAILURE);
-    }
-    if (dup2(ctx->fd[1], STDOUT_FILENO) == -1)
-    {
-        exit(EXIT_FAILURE);
-    }
-    if (ctx->fd[0] >= 0)
-    {
-        close(ctx->fd[0]);
-    }
-    execute_command(ctx->av[2], ctx);
+	if (dup2(ctx->infile, STDIN_FILENO) == -1)
+		exit(EXIT_FAILURE);
+	if (dup2(ctx->fd[1], STDOUT_FILENO) == -1)
+		exit(EXIT_FAILURE);
+	if (ctx->fd[0] >= 0)
+		close(ctx->fd[0]);
+	execute_command(ctx->av[2], ctx);
 }
 
-void    child_2(t_pipex *ctx)
+void	child_2(t_pipex *ctx)
 {
 
-    if (dup2(ctx->fd[0], STDIN_FILENO) == -1)
-    {
-        exit(EXIT_FAILURE);
-    }
-    if (dup2(ctx->outfile, STDOUT_FILENO) == -1)
-    {
-        exit(EXIT_FAILURE);
-    }
-
-    if (ctx->fd[1] >= 0)
-        close(ctx->fd[1]);
-    execute_command(ctx->av[3], ctx);
+	if (dup2(ctx->fd[0], STDIN_FILENO) == -1)
+		exit(EXIT_FAILURE);
+	if (dup2(ctx->outfile, STDOUT_FILENO) == -1)
+		exit(EXIT_FAILURE);
+	if (ctx->fd[1] >= 0)
+		close(ctx->fd[1]);
+	execute_command(ctx->av[3], ctx);
 }
 
 void    pipex(t_pipex *ctx)
@@ -112,14 +95,10 @@ void    pipex(t_pipex *ctx)
     close(ctx->fd[0]);
     close(ctx->fd[1]);
 
-   // printf("pid_child1: %d\n", pid_child1);
-   // printf("pid_child2: %d\n", pid_child2);
 
    	waitpid(pid_child1, &ctx->status1, 0);
    	waitpid(pid_child2, &ctx->status2, 0);
-	get_exit_status(ctx->status2, 1); /// START FROM HERE
-
-   // handle_exit_status(ctx->status1, ctx->status2);
+	get_exit_status(ctx->status2, 1);
 }
 
 void    init_pipex(t_pipex *ctx, int argc, char **argv, char **envp)

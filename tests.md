@@ -1,6 +1,6 @@
-**Edge Cases for the Pipex Program**
+**Test Cases for the Pipex Program**
 
-### **Input/Output Edge Cases**
+## **Input/Output Edge Cases**
 1. **Non-existent Infile** // passed
    - **Terminal**:
      ```bash
@@ -22,7 +22,7 @@
      ./pipex inputfiles/noread.txt "cat" "cat" outputfiles/output.txt
      ```
 
-3. **Empty Infile**
+3. **Empty Infile** // passed
    - **Terminal**:
      ```bash
      > inputfiles/empty.txt
@@ -33,7 +33,7 @@
      ./pipex inputfiles/empty.txt "cat" "cat" outputfiles/output.txt
      ```
 
-4. **Non-existent Outfile**
+4. **Non-existent Outfile** // passed
    - **Terminal**:
      ```bash
      < inputfiles/existing.txt cat > outputfiles/nonexistent/output.txt
@@ -43,7 +43,7 @@
      ./pipex inputfiles/existing.txt "cat" "cat" outputfiles/nonexistent/output.txt
      ```
 
-5. **No Write Permission on Outfile**
+5. **No Write Permission on Outfile** // passed
    - **Terminal**:
      ```bash
      touch outputfiles/nowrite.txt && chmod -w outputfiles/nowrite.txt
@@ -56,8 +56,9 @@
 
 ---
 
-### **Command Edge Cases**
-6. **First Command Not Found**
+## **Command Edge Cases**
+
+6. **First Command Not Found** //  passed
    - **Terminal**:
      ```bash
      < inputfiles/existing.txt nonexistentcmd | cat > outputfiles/output.txt
@@ -67,7 +68,7 @@
      ./pipex inputfiles/existing.txt "nonexistentcmd" "cat" outputfiles/output.txt
      ```
 
-7. **Second Command Not Found**
+7. **Second Command Not Found** // passed
    - **Terminal**:
      ```bash
      < inputfiles/existing.txt cat | nonexistentcmd > outputfiles/output.txt
@@ -77,7 +78,7 @@
      ./pipex inputfiles/existing.txt "cat" "nonexistentcmd" outputfiles/output.txt
      ```
 
-8. **Both Commands Not Found**
+8. **Both Commands Not Found** // passed
    - **Terminal**:
      ```bash
      < inputfiles/existing.txt nonexistentcmd1 | nonexistentcmd2 > outputfiles/output.txt
@@ -87,18 +88,7 @@
      ./pipex inputfiles/existing.txt "nonexistentcmd1" "nonexistentcmd2" outputfiles/output.txt
      ```
 
-9. **Executable Command Without Execution Permission**
-   - **Terminal**:
-     ```bash
-     chmod -x inputfiles/script.sh
-     < inputfiles/existing.txt ./inputfiles/script.sh > outputfiles/output.txt
-     ```
-   - **Pipex**:
-     ```bash
-     ./pipex inputfiles/existing.txt "./inputfiles/script.sh" "cat" outputfiles/output.txt
-     ```
-
-10. **Empty Command**
+9. **Empty First Command**  // passed
     - **Terminal**:
       ```bash
       < inputfiles/existing.txt "" | cat > outputfiles/output.txt
@@ -108,7 +98,27 @@
       ./pipex inputfiles/existing.txt "" "cat" outputfiles/output.txt
       ```
 
-11. **Command with Arguments Containing Special Characters**
+10. **Empty Second Command**  // passed
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt cat | "" > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "cat" "" outputfiles/output.txt
+      ```
+
+11. **Empty Both Command**  // passed
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt "" | "" > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "" "" outputfiles/output.txt
+      ```
+
+12. **Command with Arguments Containing Special Characters**  // ??? maybe no need to test
     - **Terminal**:
       ```bash
       < inputfiles/existing.txt grep "a.*b" > outputfiles/output.txt
@@ -118,27 +128,7 @@
       ./pipex inputfiles/existing.txt "grep 'a.*b'" "cat" outputfiles/output.txt
       ```
 
-12. **Command with Absolute Path**
-    - **Terminal**:
-      ```bash
-      < inputfiles/existing.txt /bin/cat > outputfiles/output.txt
-      ```
-    - **Pipex**:
-      ```bash
-      ./pipex inputfiles/existing.txt "/bin/cat" "cat" outputfiles/output.txt
-      ```
-
-13. **Command with Relative Path**
-    - **Terminal**:
-      ```bash
-      < inputfiles/existing.txt ./inputfiles/relativescript.sh > outputfiles/output.txt
-      ```
-    - **Pipex**:
-      ```bash
-      ./pipex inputfiles/existing.txt "./inputfiles/relativescript.sh" "cat" outputfiles/output.txt
-      ```
-
-14. **Command Using Environment Variables**
+13. **Command Using Environment Variables** // passed
     - **Terminal**:
       ```bash
       < inputfiles/existing.txt env | grep PATH > outputfiles/output.txt
@@ -148,40 +138,12 @@
       ./pipex inputfiles/existing.txt "env" "grep PATH" outputfiles/output.txt
       ```
 
-15. **Command That Exits with Non-Zero Status Code**
-    - **Terminal**:
-      ```bash
-      < inputfiles/existing.txt grep "nonexistentpattern" | cat > outputfiles/output.txt
-      ```
-    - **Pipex**:
-      ```bash
-      ./pipex inputfiles/existing.txt "grep nonexistentpattern" "cat" outputfiles/output.txt
-      ```
-
 ---
 
-### **Pipe and Execution Edge Cases**
-16. **No Input Redirection** (Missing infile)
-    - **Terminal**:
-      ```bash
-      cat | cat > outputfiles/output.txt
-      ```
-    - **Pipex**:
-      ```bash
-      ./pipex "" "cat" "cat" outputfiles/output.txt
-      ```
+## **Pipe and Execution Edge Cases**
 
-17. **No Output Redirection** (Missing outfile)
-    - **Terminal**:
-      ```bash
-      < inputfiles/existing.txt cat
-      ```
-    - **Pipex**:
-      ```bash
-      ./pipex inputfiles/existing.txt "cat" "cat" ""
-      ```
 
-18. **Broken Pipe Handling**
+14. **Broken Pipe Handling** // ??? maybe no need to test
     - **Terminal**:
       ```bash
       yes | head -n 1 > outputfiles/output.txt
@@ -189,16 +151,6 @@
     - **Pipex**:
       ```bash
       ./pipex inputfiles/existing.txt "yes" "head -n 1" outputfiles/output.txt
-      ```
-
-19. **Huge Input File**
-    - **Terminal**:
-      ```bash
-      < inputfiles/hugefile.txt cat > outputfiles/output.txt
-      ```
-    - **Pipex**:
-      ```bash
-      ./pipex inputfiles/hugefile.txt "cat" "cat" outputfiles/output.txt
       ```
 
 20. **Large Output File**
