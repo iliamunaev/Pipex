@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/15 22:38:05 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 12:39:24 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ void    execute_command(char *av, t_pipex *ctx)
 
     cmd.args = ft_split(av, ' ');
     if (!cmd.args || !cmd.args[0])
-        //error_exit("Invalid command", 127);
-        foo();
+        error_exit("Invalid command", 127);
+        //foo();
 
     cmd.cmd = cmd.args[0];
     printf("CMD: %s\n", cmd.cmd);
@@ -30,28 +30,27 @@ void    execute_command(char *av, t_pipex *ctx)
 		ft_putstr_fd(cmd.cmd, STDERR_FILENO);
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		free_arr_memory(cmd.args);
-		//exit(127); // Command not found
-        //foo();
+
+		exit(127); // Command not found
 	}
 
-	if (execve(cmd.path, cmd.args, ctx->envp) == -1)
-	{
-		//perror(cmd.cmd);
+    if (execve(cmd.path, cmd.args, ctx->envp) == -1)
+    {
+        perror(cmd.cmd);
         foo();
-		free(cmd.path);
-		free_arr_memory(cmd.args);
-		if (errno == EACCES)
-		{
-			//exit(126);
-            foo();
-		}
-		else
+        free(cmd.path);
+        free_arr_memory(cmd.args);
+        if (errno == EACCES)
         {
-			//exit(EXIT_FAILURE);
-            foo();
+            exit(126);
         }
+        else
+        {
+            exit(EXIT_FAILURE);
+        }
+    }
 
-	}
+
 
 }
 
@@ -97,24 +96,24 @@ void    pipex(t_pipex *ctx)
     pid_child1 = fork();
     if (pid_child1 == -1)
     {
-        //error_exit("Fork failed for child 1", EXIT_FAILURE);
-        foo();
+        error_exit("Fork failed for child 1", EXIT_FAILURE);
+        //foo();
     }
     if (pid_child1 == 0)
         child_1(ctx);
     pid_child2 = fork();
     if (pid_child2 == -1)
     {
-        //error_exit("Fork failed for child 2", EXIT_FAILURE);
-        foo();
+        error_exit("Fork failed for child 2", EXIT_FAILURE);
+       // foo();
     }
     if (pid_child2 == 0)
         child_2(ctx);
     close(ctx->fd[0]);
     close(ctx->fd[1]);
 
-    printf("pid_child1: %d\n", pid_child1);
-    printf("pid_child2: %d\n", pid_child2);
+   // printf("pid_child1: %d\n", pid_child1);
+   // printf("pid_child2: %d\n", pid_child2);
 
    	waitpid(pid_child1, &ctx->status1, 0);
    	waitpid(pid_child2, &ctx->status2, 0);
@@ -139,10 +138,10 @@ void    init_pipex(t_pipex *ctx, int argc, char **argv, char **envp)
 	if (ctx->infile == -1)
 	{
 		if (errno == ENOENT)
-			error_exit(argv[1], 1); // No such file or directory
+			error_exit(argv[1], EXIT_FAILURE); // "No such file or directory"
 		if (errno == EACCES)
-        {   printf("TESTING\n");
-			error_exit(argv[1], 126); // Exit code 126
+        {
+			error_exit(argv[1], EXIT_FAILURE); // Exit code 126
         }
 	}
 
@@ -150,11 +149,11 @@ void    init_pipex(t_pipex *ctx, int argc, char **argv, char **envp)
     if (ctx->outfile == -1)
 	{
 		if (errno == EACCES)
-            foo(); //error_exit(argv[4], 1);
-        foo(); //error_exit(argv[4], EXIT_FAILURE);
+            error_exit(argv[4], 126);
+        error_exit(argv[4], EXIT_FAILURE);
 	}
     if (pipe(ctx->fd) == -1)
-        foo(); //error_exit("Pipe creation failed", EXIT_FAILURE);
+        error_exit("Pipe creation failed", EXIT_FAILURE);
 }
 
 int	main(int argc, char **argv, char **envp)

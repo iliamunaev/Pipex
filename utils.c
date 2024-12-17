@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/12 21:18:05 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 10:38:42 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,14 @@ void	cleanup_pipex(t_pipex *ctx)
         close(ctx->fd[1]);
 }
 
-void	free_arr_memory(char **paths)
+void	free_arr_memory(char **arr)
 {
 	int	i;
 
 	i = 0;
-	while (paths[i])
-		free(paths[i++]);
-	free(paths);
+	while (arr[i])
+		free(arr[i++]);
+	free(arr);
 }
 
 /**

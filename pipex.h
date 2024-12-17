@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 17:22:35 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/13 13:07:35 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/17 12:31:38 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ void    cleanup_pipex(t_pipex *ctx);
 
 // eeror handlers
 void	error_exit(const char *msg, int status);
+
 void	handle_exit_status(int status1, int status2);
 int get_exit_status(int status, int update);
 void	program_exit(void);

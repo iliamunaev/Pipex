@@ -8,6 +8,7 @@ error_handle_utils.o
 infiles
 libft
 Makefile
+nonexistingfile_created
 outfiles
 pipex
 pipex.c

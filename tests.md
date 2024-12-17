@@ -1,188 +1,262 @@
-## Pipex Test Commands
+**Edge Cases for the Pipex Program**
 
-### 1. Basic Checks
+### **Input/Output Edge Cases**
+1. **Non-existent Infile** // passed
+   - **Terminal**:
+     ```bash
+     < inputfiles/nonexistent.txt cat > outputfiles/output.txt
+     ```
+   - **Pipex**:
+     ```bash
+     ./pipex inputfiles/nonexistent.txt "cat" "cat" outputfiles/output.txt
+     ```
 
-#### Test 1
-**Description**: Reads the file using `cat -e` (displays line endings with `$`) and pipes it to another `cat -e` before writing to the output file.
-**Real Terminal**:
-```bash
-< infiles/basic.txt cat -e | cat -e > outfiles/outfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/basic.txt "cat -e" "cat -e" outfiles/outfile
-```
-**Real Terminal**:
-```bash
-diff -y outfiles/outfile_real outfiles/outfile
-```
+2. **No Read Permission on Infile** // passed
+   - **Terminal**:
+     ```bash
+     chmod -r inputfiles/noread.txt
+     < inputfiles/noread.txt cat > outputfiles/output.txt
+     ```
+   - **Pipex**:
+     ```bash
+     ./pipex inputfiles/noread.txt "cat" "cat" outputfiles/output.txt
+     ```
 
-#### Test 2
-**Description**: Executes `ls -la` (lists all files, including hidden ones) and pipes the output to `cat -e`.
-**Real Terminal**:
-```bash
-< infiles/basic.txt ls -la | cat -e > outfiles/outfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/basic.txt "ls -la" "cat -e" outfiles/outfile
-```
+3. **Empty Infile**
+   - **Terminal**:
+     ```bash
+     > inputfiles/empty.txt
+     < inputfiles/empty.txt cat > outputfiles/output.txt
+     ```
+   - **Pipex**:
+     ```bash
+     ./pipex inputfiles/empty.txt "cat" "cat" outputfiles/output.txt
+     ```
 
-#### Test 3
-**Description**: Executes `ls -l -a` (detailed listing of all files, including hidden ones) and pipes to `cat -e -n` (adds line numbers).
-**Real Terminal**:
-```bash
-< infiles/basic.txt ls -l -a | cat -e -n > outfiles/outfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/basic.txt "ls -l -a" "cat -e -n" outfiles/outfile
-```
+4. **Non-existent Outfile**
+   - **Terminal**:
+     ```bash
+     < inputfiles/existing.txt cat > outputfiles/nonexistent/output.txt
+     ```
+   - **Pipex**:
+     ```bash
+     ./pipex inputfiles/existing.txt "cat" "cat" outputfiles/nonexistent/output.txt
+     ```
 
-#### Test 4
-**Description**: Executes `ls -l -a -f` (detailed listing with no sorting) and pipes to `cat -e -n`.
-**Real Terminal**:
-```bash
-< infiles/basic.txt ls -l -a -f | cat -e -n > outfiles/outfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/basic.txt "ls -l -a -f" "cat -e -n" outfiles/outfile
-```
-
-#### Test 5
-**Description**: Executes `ls -laf` (lists all files, including hidden ones, without sorting) and pipes to `cat -e -n`.
-**Real Terminal**:
-```bash
-< infiles/basic.txt ls -laf | cat -e -n > outfiles/outfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/basic.txt "ls -laf" "cat -e -n" outfiles/outfile
-```
-
-#### Test 6
-**Description**: Uses `grep -A5 is` (searches for 'is' and displays 5 lines after each match) and pipes the result to `cat -e`.
-**Real Terminal**:
-```bash
-< infiles/basic.txt grep -A5 is | cat -e > outfiles/nonexistingfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/basic.txt "grep -A5 is" "cat -e" outfiles/nonexistingfile
-```
-
-#### Test 7
-**Description**: Reads the file with `cat -e` and searches for a non-existent word using `grep nonexistingword`.
-**Real Terminal**:
-```bash
-< infiles/basic.txt cat -e | grep nonexistingword > outfiles/nonexistingfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/basic.txt "cat -e" "grep nonexistingword" outfiles/nonexistingfile
-```
-
-#### Test 8
-**Description**: Uses an empty input file with `grep nonexistingword` and pipes the result to `cat -e`.
-**Real Terminal**:
-```bash
-< infiles/empty.txt grep nonexistingword | cat -e > outfiles/outfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/empty.txt "grep nonexistingword" "cat -e" outfiles/outfile
-```
-
-#### Test 9
-**Description**: Executes `sleep 3` (pauses for 3 seconds) and then runs `ls`.
-**Real Terminal**:
-```bash
-< infiles/basic.txt sleep 3 | ls > outfiles/outfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/basic.txt "sleep 3" "ls" outfiles/outfile
-```
-
-#### Test 10
-**Description**: Reads a large text file using `cat` and displays the first two lines with `head -2`.
-**Real Terminal**:
-```bash
-< infiles/big_text.txt cat | head -2 > outfiles/outfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/big_text.txt "cat" "head -2" outfiles/outfile
-```
+5. **No Write Permission on Outfile**
+   - **Terminal**:
+     ```bash
+     touch outputfiles/nowrite.txt && chmod -w outputfiles/nowrite.txt
+     < inputfiles/existing.txt cat > outputfiles/nowrite.txt
+     ```
+   - **Pipex**:
+     ```bash
+     ./pipex inputfiles/existing.txt "cat" "cat" outputfiles/nowrite.txt
+     ```
 
 ---
 
-### 2. Error Checking
+### **Command Edge Cases**
+6. **First Command Not Found**
+   - **Terminal**:
+     ```bash
+     < inputfiles/existing.txt nonexistentcmd | cat > outputfiles/output.txt
+     ```
+   - **Pipex**:
+     ```bash
+     ./pipex inputfiles/existing.txt "nonexistentcmd" "cat" outputfiles/output.txt
+     ```
 
-#### Test 1 (Invalid Input File)
-**Description**: Tests with a non-existent input file to check error handling.
-**Real Terminal**:
-```bash
-< nonexistingfile cat -e | ls > outfiles/outfile_real
-```
-**Pipex**:
-```bash
-./pipex nonexistingfile "cat -e" "ls" outfiles/outfile
-```
+7. **Second Command Not Found**
+   - **Terminal**:
+     ```bash
+     < inputfiles/existing.txt cat | nonexistentcmd > outputfiles/output.txt
+     ```
+   - **Pipex**:
+     ```bash
+     ./pipex inputfiles/existing.txt "cat" "nonexistentcmd" outputfiles/output.txt
+     ```
 
-#### Test 2 (nonexisting Output File)
-**Description**: Tests with a non-existent output file to check error handling.
-**Real Terminal**:
-```bash
-< infiles/big_text.txt cat -e | ls > nonexistingfile_created
-```
-**Pipex**:
-```bash
-./pipex infiles/big_text.txt "cat -e" "ls" nonexistingfile_created
-```
+8. **Both Commands Not Found**
+   - **Terminal**:
+     ```bash
+     < inputfiles/existing.txt nonexistentcmd1 | nonexistentcmd2 > outputfiles/output.txt
+     ```
+   - **Pipex**:
+     ```bash
+     ./pipex inputfiles/existing.txt "nonexistentcmd1" "nonexistentcmd2" outputfiles/output.txt
+     ```
 
-#### Test 3 (Input File Without Permissions)
-**Description**: Tests with an input file that lacks read permissions.
-**Setup**:
-```bash
-touch infiles/infile_without_permissions
-chmod 000 infiles/infile_without_permissions
-```
-**Real Terminal**:
-```bash
-< infiles/infile_without_permissions cat -e | cat -e > outfiles/outfile_real
-```
-**Pipex**:
-```bash
-./pipex infiles/infile_without_permissions "cat -e" "cat -e" outfiles/outfile
-```
+9. **Executable Command Without Execution Permission**
+   - **Terminal**:
+     ```bash
+     chmod -x inputfiles/script.sh
+     < inputfiles/existing.txt ./inputfiles/script.sh > outputfiles/output.txt
+     ```
+   - **Pipex**:
+     ```bash
+     ./pipex inputfiles/existing.txt "./inputfiles/script.sh" "cat" outputfiles/output.txt
+     ```
 
-#### Test 3 (Output File Without Permissions)
-**Description**: Tests with an output file that lacks write permissions.
-**Setup**:
-```bash
-touch outfiles/outfile_without_permissions
-chmod 000 outfiles/outfile_without_permissions
-```
-**Real Terminal**:
-```bash
-< infiles/basic.txt cat -e | cat -e > outfiles/outfile_without_permissions
-```
-**Pipex**:
-```bash
-./pipex infiles/basic.txt "cat -e" "cat -e" outfiles/outfile_without_permissions
-```
+10. **Empty Command**
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt "" | cat > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "" "cat" outputfiles/output.txt
+      ```
 
-### Test 4 (Both invalid commands)
-**Description**:
-**Real Terminal**:
-```bash
-< infiles/basic.txt ls-l | grepzao x > outfiles/outfile
-```
-**Pipex**:
-```bash
-./pipex infiles/basic.txt "ls-l" "grepzao x" outfiles/outfile
-```
+11. **Command with Arguments Containing Special Characters**
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt grep "a.*b" > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "grep 'a.*b'" "cat" outputfiles/output.txt
+      ```
 
+12. **Command with Absolute Path**
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt /bin/cat > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "/bin/cat" "cat" outputfiles/output.txt
+      ```
+
+13. **Command with Relative Path**
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt ./inputfiles/relativescript.sh > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "./inputfiles/relativescript.sh" "cat" outputfiles/output.txt
+      ```
+
+14. **Command Using Environment Variables**
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt env | grep PATH > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "env" "grep PATH" outputfiles/output.txt
+      ```
+
+15. **Command That Exits with Non-Zero Status Code**
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt grep "nonexistentpattern" | cat > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "grep nonexistentpattern" "cat" outputfiles/output.txt
+      ```
+
+---
+
+### **Pipe and Execution Edge Cases**
+16. **No Input Redirection** (Missing infile)
+    - **Terminal**:
+      ```bash
+      cat | cat > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex "" "cat" "cat" outputfiles/output.txt
+      ```
+
+17. **No Output Redirection** (Missing outfile)
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt cat
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "cat" "cat" ""
+      ```
+
+18. **Broken Pipe Handling**
+    - **Terminal**:
+      ```bash
+      yes | head -n 1 > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "yes" "head -n 1" outputfiles/output.txt
+      ```
+
+19. **Huge Input File**
+    - **Terminal**:
+      ```bash
+      < inputfiles/hugefile.txt cat > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/hugefile.txt "cat" "cat" outputfiles/output.txt
+      ```
+
+20. **Large Output File**
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt yes > outputfiles/largefile.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "yes" "cat" outputfiles/largefile.txt
+      ```
+
+21. **Command Producing No Output**
+    - **Terminal**:
+      ```bash
+      < inputfiles/existing.txt grep "nonexistentpattern" > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "grep nonexistentpattern" "cat" outputfiles/output.txt
+      ```
+
+22. **Command Producing Excessive Output**
+    - **Terminal**:
+      ```bash
+      yes > outputfiles/output.txt
+      ```
+    - **Pipex**:
+      ```bash
+      ./pipex inputfiles/existing.txt "yes" "cat" outputfiles/output.txt
+      ```
+
+---
+
+### **Memory and Resource Edge Cases**
+23. **Multiple Processes Competing for System Resources**
+24. **File Descriptor Leak Test**
+25. **Memory Leak Test** (using `valgrind`)
+
+---
+
+### **Signal Handling Edge Cases**
+26. **SIGINT Handling (Ctrl+C)**
+27. **SIGPIPE Handling**
+28. **SIGSEGV Handling** (Segmentation fault protection)
+29. **Invalid Input for Execve** (e.g., `NULL` path or corrupted command)
+
+---
+
+### **Environment Edge Cases**
+30. **Empty PATH Environment Variable**
+31. **PATH Environment Variable Missing**
+32. **PATH Contains Invalid Directories**
+33. **Command Using Custom Environment Variables**
+
+---
+
+### **Concurrency Edge Cases**
+34. **Multiple Instances of Pipex Running Simultaneously**
+35. **Race Condition on File Access**
 
