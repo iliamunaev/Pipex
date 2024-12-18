@@ -1,214 +1,173 @@
-**Test Cases for the Pipex Program**
+
+# **Test Cases for the Pipex Program**
 
 ## **Input/Output Edge Cases**
+
 1. **Non-existent Infile** // passed
    - **Terminal**:
      ```bash
-     < inputfiles/nonexistent.txt cat > outputfiles/output.txt
+     < test_files/nonexistent.txt | ls > test_files/output.txt
      ```
    - **Pipex**:
      ```bash
-     ./pipex inputfiles/nonexistent.txt "cat" "cat" outputfiles/output.txt
+     ./pipex test_files/nonexistent.txt "cat" "ls" test_files/output.txt
      ```
 
-2. **No Read Permission on Infile** // passed
+2. **Non-existent Outfile ** // passed
    - **Terminal**:
      ```bash
-     chmod -r inputfiles/noread.txt
-     < inputfiles/noread.txt cat > outputfiles/output.txt
+     < test_files/existing.txt cat | > test_files/nonexistent_output.txt
      ```
    - **Pipex**:
      ```bash
-     ./pipex inputfiles/noread.txt "cat" "cat" outputfiles/output.txt
+     ./pipex test_files/existing.txt "cat" "cat" test_files/nonexistent_output.txt
      ```
 
-3. **Empty Infile** // passed
+3. **No Read Permission on Infile** // passed
    - **Terminal**:
      ```bash
-     > inputfiles/empty.txt
-     < inputfiles/empty.txt cat > outputfiles/output.txt
+     chmod -r test_files/noread.txt
+     < test_files/noread.txt cat | ls -l > test_files/output.txt
      ```
    - **Pipex**:
      ```bash
-     ./pipex inputfiles/empty.txt "cat" "cat" outputfiles/output.txt
+     ./pipex test_files/noread.txt "cat" "ls -l" test_files/output.txt
      ```
 
-4. **Non-existent Outfile** // passed
+4. **No Write Permission on Outfile** // passed
    - **Terminal**:
      ```bash
-     < inputfiles/existing.txt cat > outputfiles/nonexistent/output.txt
+     touch test_files/nowrite.txt && chmod -w test_files/nowrite.txt
+     < test_files/existing.txt cat | > test_files/nowrite.txt
      ```
    - **Pipex**:
      ```bash
-     ./pipex inputfiles/existing.txt "cat" "cat" outputfiles/nonexistent/output.txt
+     ./pipex test_files/existing.txt "cat" "cat" test_files/nowrite.txt
      ```
 
-5. **No Write Permission on Outfile** // passed
+5. **Not Empty Infile** // passed
    - **Terminal**:
      ```bash
-     touch outputfiles/nowrite.txt && chmod -w outputfiles/nowrite.txt
-     < inputfiles/existing.txt cat > outputfiles/nowrite.txt
+     < test_files/existing.txt cat | > test_files/output.txt
      ```
    - **Pipex**:
      ```bash
-     ./pipex inputfiles/existing.txt "cat" "cat" outputfiles/nowrite.txt
+     ./pipex test_files/existing.txt "cat" "cat" test_files/output.txt
      ```
-
----
 
 ## **Command Edge Cases**
 
-6. **First Command Not Found** //  passed
+6. **First Command Not Found** //
    - **Terminal**:
      ```bash
-     < inputfiles/existing.txt nonexistentcmd | cat > outputfiles/output.txt
+     < test_files/existing.txt nonexistentcmd | cat > test_files/output.txt
      ```
    - **Pipex**:
      ```bash
-     ./pipex inputfiles/existing.txt "nonexistentcmd" "cat" outputfiles/output.txt
+     ./pipex test_files/existing.txt "nonexistentcmd" "cat" test_files/output.txt
      ```
-
-7. **Second Command Not Found** // passed
+7. **Second Command Not Found** //
    - **Terminal**:
      ```bash
-     < inputfiles/existing.txt cat | nonexistentcmd > outputfiles/output.txt
+     < test_files/existing.txt cat | nonexistentcmd > test_files/output.txt
      ```
    - **Pipex**:
      ```bash
-     ./pipex inputfiles/existing.txt "cat" "nonexistentcmd" outputfiles/output.txt
+     ./pipex test_files/existing.txt "cat" "nonexistentcmd" test_files/output.txt
      ```
 
-8. **Both Commands Not Found** // passed
+8. **Both Commands Not Found** //
    - **Terminal**:
      ```bash
-     < inputfiles/existing.txt nonexistentcmd1 | nonexistentcmd2 > outputfiles/output.txt
+     < test_files/existing.txt nonexistentcmd1 | nonexistentcmd2 > test_files/output.txt
      ```
    - **Pipex**:
      ```bash
-     ./pipex inputfiles/existing.txt "nonexistentcmd1" "nonexistentcmd2" outputfiles/output.txt
+     ./pipex test_files/existing.txt "nonexistentcmd1" "nonexistentcmd2" test_files/output.txt
      ```
 
-9. **Empty First Command**  // passed
+9. **Empty First Command** //
     - **Terminal**:
       ```bash
-      < inputfiles/existing.txt "" | cat > outputfiles/output.txt
+      < test_files/existing.txt "" | cat > test_files/output.txt
       ```
     - **Pipex**:
       ```bash
-      ./pipex inputfiles/existing.txt "" "cat" outputfiles/output.txt
+      ./pipex test_files/existing.txt "" "cat" test_files/output.txt
       ```
 
-10. **Empty Second Command**  // passed
+10. **Empty Second Command** //
     - **Terminal**:
       ```bash
-      < inputfiles/existing.txt cat | "" > outputfiles/output.txt
+      < test_files/existing.txt cat | "" > test_files/output.txt
       ```
     - **Pipex**:
       ```bash
-      ./pipex inputfiles/existing.txt "cat" "" outputfiles/output.txt
+      ./pipex test_files/existing.txt "cat" "" test_files/output.txt
       ```
 
-11. **Empty Both Command**  // passed
+11. **Empty Both Commands** //
     - **Terminal**:
       ```bash
-      < inputfiles/existing.txt "" | "" > outputfiles/output.txt
+      < test_files/existing.txt "" | "" > test_files/output.txt
       ```
     - **Pipex**:
       ```bash
-      ./pipex inputfiles/existing.txt "" "" outputfiles/output.txt
+      ./pipex test_files/existing.txt "" "" test_files/output.txt
       ```
 
 12. **Command with Arguments Containing Special Characters**  // ??? maybe no need to test
     - **Terminal**:
       ```bash
-      < inputfiles/existing.txt grep "a.*b" > outputfiles/output.txt
+      < test_files/existing.txt grep "a.*b" > test_files/output.txt
       ```
     - **Pipex**:
       ```bash
-      ./pipex inputfiles/existing.txt "grep 'a.*b'" "cat" outputfiles/output.txt
+      ./pipex test_files/existing.txt "grep 'a.*b'" "cat" test_files/output.txt
       ```
 
-13. **Command Using Environment Variables** // passed
+13. **Command Using Environment Variables** //
     - **Terminal**:
       ```bash
-      < inputfiles/existing.txt env | grep PATH > outputfiles/output.txt
+      < test_files/existing.txt env | grep PATH > test_files/output.txt
       ```
     - **Pipex**:
       ```bash
-      ./pipex inputfiles/existing.txt "env" "grep PATH" outputfiles/output.txt
+      ./pipex test_files/existing.txt "env" "grep PATH" test_files/output.txt
       ```
 
----
 
 ## **Pipe and Execution Edge Cases**
 
-
-14. **Broken Pipe Handling** // ??? maybe no need to test
+14. **Broken Pipe Handling** // 
     - **Terminal**:
       ```bash
-      yes | head -n 1 > outputfiles/output.txt
+      yes | head -n 2 > test_files/output.txt
       ```
     - **Pipex**:
       ```bash
-      ./pipex inputfiles/existing.txt "yes" "head -n 1" outputfiles/output.txt
-      ```
-
-20. **Large Output File**
-    - **Terminal**:
-      ```bash
-      < inputfiles/existing.txt yes > outputfiles/largefile.txt
-      ```
-    - **Pipex**:
-      ```bash
-      ./pipex inputfiles/existing.txt "yes" "cat" outputfiles/largefile.txt
+      ./pipex test_files/existing.txt "yes" "head -n 2" test_files/output.txt
       ```
 
 21. **Command Producing No Output**
     - **Terminal**:
       ```bash
-      < inputfiles/existing.txt grep "nonexistentpattern" > outputfiles/output.txt
+      < test_files/existing.txt grep "nonexistentpattern" > test_files/output.txt
       ```
     - **Pipex**:
       ```bash
-      ./pipex inputfiles/existing.txt "grep nonexistentpattern" "cat" outputfiles/output.txt
+      ./pipex test_files/existing.txt "grep nonexistentpattern" "cat" test_files/output.txt
       ```
 
 22. **Command Producing Excessive Output**
     - **Terminal**:
       ```bash
-      yes > outputfiles/output.txt
+      yes > test_files/output.txt
       ```
     - **Pipex**:
       ```bash
-      ./pipex inputfiles/existing.txt "yes" "cat" outputfiles/output.txt
+      ./pipex test_files/existing.txt "yes" "cat" test_files/output.txt
       ```
 
 ---
-
-### **Memory and Resource Edge Cases**
-23. **Multiple Processes Competing for System Resources**
-24. **File Descriptor Leak Test**
-25. **Memory Leak Test** (using `valgrind`)
-
----
-
-### **Signal Handling Edge Cases**
-26. **SIGINT Handling (Ctrl+C)**
-27. **SIGPIPE Handling**
-28. **SIGSEGV Handling** (Segmentation fault protection)
-29. **Invalid Input for Execve** (e.g., `NULL` path or corrupted command)
-
----
-
-### **Environment Edge Cases**
-30. **Empty PATH Environment Variable**
-31. **PATH Environment Variable Missing**
-32. **PATH Contains Invalid Directories**
-33. **Command Using Custom Environment Variables**
-
----
-
-### **Concurrency Edge Cases**
-34. **Multiple Instances of Pipex Running Simultaneously**
-35. **Race Condition on File Access**
 

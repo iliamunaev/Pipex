@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/18 12:55:21 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/18 17:22:24 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	execute_command(char *av, t_pipex *ctx)
 	{
 		perror(cmd.cmd);
 		free_arr_memory(cmd.args);
-		perror_n_exit(": command not found\n", 127);
+		exit(127);
 	}
 	if (execve(cmd.path, cmd.args, ctx->envp) == -1)
 	{

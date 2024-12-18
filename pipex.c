@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 23:48:21 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/18 17:37:09 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	child_1(t_pipex *ctx)
 	if (ctx->fd[0] >= 0)
 		close(ctx->fd[0]);
 	if (*ctx->av[2] == '\0')
-		perror_n_exit("Error: Empty command provided.\n", EXIT_FAILURE);
+		perror_n_exit("Error: Empty command provided", EXIT_FAILURE);
 	execute_command(ctx->av[2], ctx);
 }
 
@@ -50,7 +50,7 @@ void	child_2(t_pipex *ctx)
 	if (ctx->fd[1] >= 0)
 		close(ctx->fd[1]);
 	if (*ctx->av[3] == '\0')
-		perror_n_exit("Error: Empty command provided.\n", EXIT_FAILURE);
+		perror_n_exit("Error: Empty command provided", EXIT_FAILURE);
 	execute_command(ctx->av[3], ctx);
 }
 
@@ -80,7 +80,7 @@ int	pipex(t_pipex *ctx)
 		child_2(ctx);
 	close(ctx->fd[0]);
 	close(ctx->fd[1]);
-	waitpid(pid_child1, &ctx->status1, 0);
+	waitpid(pid_child1, NULL, 0);
 	waitpid(pid_child2, &ctx->status2, 0);
 	return (exit_status(ctx->status2));
 }
@@ -99,13 +99,15 @@ int	pipex(t_pipex *ctx)
 void	init_pipex(t_pipex *ctx, int argc, char **argv, char **envp)
 {
 	if (argc != 5)
-		perror_n_exit("Invalid number of arguments\n", EXIT_FAILURE);
+		perror_n_exit("Invalid number of arguments", EXIT_FAILURE);
 	ctx->argc = argc;
 	ctx->av = argv;
 	ctx->envp = envp;
 	ctx->infile = open(argv[1], O_RDONLY);
 	if (ctx->infile == -1)
+	{
 		perror(argv[1]);
+	}
 	ctx->outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (ctx->outfile == -1)
 	{
