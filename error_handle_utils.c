@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 16:17:54 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 23:46:57 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/18 23:02:26 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
  * @param status The status code returned by waitpid.
  * @return The processed exit status.
  */
+ /*
 int	exit_status(int status)
 {
 	int	exit_status;
@@ -31,6 +32,16 @@ int	exit_status(int status)
 		exit_status = status;
 	return (exit_status);
 }
+*/
+
+int	exit_status(int status)
+{
+	if (WIFEXITED(status)) // This macro returns a nonzero value if the child process terminated normally with exit or _exit.
+		return (WEXITSTATUS(status)); // If WIFEXITED is true of status, this macro returns the low-order 8 bits of the exit status value from the child process.
+	else
+		return (WTERMSIG(status)); // Return signal code (128 + signal) If WIFSIGNALED is true of status, this macro returns the signal number of the signal that terminated the child process.
+}
+
 
 /**
  * @brief Prints an error message and exits the program.

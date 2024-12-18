@@ -1,10 +1,3 @@
-XDG_SESSION_PATH=/org/freedesktop/DisplayManager/Session10
-XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons
-FT_HOOK_PATHNAME=login-user.d
-ALSA_CONFIG_PATH=/usr/share/alsa/alsa-flatpak.conf
-GI_TYPELIB_PATH=/app/lib/girepository-1.0
-XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0
-SANDBOX_LD_LIBRARY_PATH=/app/lib
-LD_LIBRARY_PATH=/app/lib
-GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/usr/lib/extensions/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0
-PATH=/app/bin:/app/bin:/app/bin:/usr/bin:/home/imunaev-/.var/app/com.visualstudio.code/data/node_modules/bin
+PYTHONPATH=/home/iliam/sp500/tests:/home/iliam/sp500/scripts/load:/home/iliam/sp500/scripts/transform:/home/iliam/sp500/scripts/extract:/home/iliam/sp500/:/home/iliam/sp500/tests:/home/iliam/sp500/scripts/load:/home/iliam/sp500/scripts/transform:/home/iliam/sp500/scripts/extract:/home/iliam/sp500/:
+LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:
+PATH=/home/iliam/gems/bin:/home/iliam/.local/bin:/home/iliam/.pyenv/plugins/pyenv-virtualenv/shims:/home/iliam/.pyenv/shims:/home/iliam/.pyenv/bin:/home/iliam/.vscode-server/bin/138f619c86f1199955d53b4166bef66ef252935c/bin/remote-cli:/home/iliam/.local/bin:/home/iliam/bin:/home/iliam/gems/bin:/home/iliam/.nvm/versions/node/v16.20.2/bin:/home/iliam/.local/bin:/home/iliam/.pyenv/plugins/pyenv-virtualenv/shims:/home/iliam/.pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Users/ilyam/AppData/Local/Programs/Python/Scripts/:/mnt/c/Users/ilyam/AppData/Local/Programs/Python/:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/Program Files/Python38/Scripts/:/mnt/c/Program Files/Python38/:/mnt/c/Program Files (x86)/ActiveState Komodo Edit 12/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/MinGW/bin:/mnt/c/msys64/mingw64/bin:/mnt/c/Program Files/Java/jdk-1.8/bin:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/JetBrains/PyCharm 2023.3.2/bin:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/usbipd-win/:/mnt/c/Program Files/PuTTY/:/mnt/c/Users/ilyam/AppData/Local/Programs/Python/Python310/Scripts/:/mnt/c/Users/ilyam/AppData/Local/Programs/Python/Python310/:/mnt/c/Users/ilyam/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/ilyam/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/ilyam/AppData/Local/GitHubDesktop/bin:/mnt/c/Users/ilyam/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/WebStorm 2024.1.1/bin:/snap/bin:/snap/charm/current/bin/wrappers:/home/iliam/bin:/snap/charm/current/bin/wrappers:/home/iliam/bin

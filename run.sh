@@ -21,9 +21,9 @@ echo ""
 echo "--------- 2: Non-existent Outfile ---------"
 echo ""
 
-< test_files/existing.txt cat | > test_files/nonexistent_output.txt 2>/dev/null
+ < test_files/existing.txt cat | head -n 1 > test_files/nonexistent_output.txt 2>/dev/null
 TERMINAL_EXIT_CODE=$?
-./pipex test_files/existing.txt "cat" "cat" test_files/nonexistent_output.txt
+./pipex test_files/existing.txt "cat" "head -n 1" test_files/nonexistent_output.txt
 PIPEX_EXIT_CODE=$?
 echo "Terminal Exit Code: $TERMINAL_EXIT_CODE"
 echo "Pipex Exit Code:    $PIPEX_EXIT_CODE"

@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 17:22:35 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/17 23:57:36 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/18 22:18:11 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <stdio.h>		// perror
 # include <sys/wait.h>	// waitpid
 # include "libft/libft.h"
+#include <string.h>
 
 // Structures
 typedef struct s_pipex
