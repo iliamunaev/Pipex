@@ -1,2 +1,0 @@
-If you read this: your programm works wrong or check permission
-chmod 000

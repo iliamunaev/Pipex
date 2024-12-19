@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 16:17:54 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/18 23:02:26 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/19 14:55:16 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,15 @@ int	perror_n_exit(char *msg, int e)
 {
 	if (msg)
 		perror(msg);
+	exit(e);
+}
+
+int	pcustom_error_n_exit(char *msg1, char *msg2, int e)
+{
+	if (msg1)
+		ft_putstr_fd(msg1, STDERR_FILENO);
+	if (msg2)
+		ft_putstr_fd(msg2, STDERR_FILENO);
 	exit(e);
 }
 

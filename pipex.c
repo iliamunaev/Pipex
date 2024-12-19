@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:18:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/18 23:59:59 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/19 14:44:45 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,7 @@ void	child_1(t_pipex *ctx)
 		ft_putstr_fd(" : command not found\n", STDERR_FILENO);
 		exit(EXIT_FAILURE);
 	}
-	close(ctx->fd[0]); // Close unused read end
-    close(ctx->fd[1]); // Close write end after dup2
+	close(ctx->fd[0]);
 	execute_command(ctx->av[2], ctx);
 }
 
@@ -50,27 +49,18 @@ void	child_1(t_pipex *ctx)
 void	child_2(t_pipex *ctx)
 {
 	if (dup2(ctx->fd[0], STDIN_FILENO) == -1)
-	{
-		perror("dup2 stdin failed in child2");
-		exit(EXIT_FAILURE);
-	}
+		perror_n_exit("dup2 stdin failed in child2", EXIT_FAILURE);
 	if (ctx->outfile != -1)
 	{
-        if (dup2(ctx->outfile, STDOUT_FILENO) == -1)
-		{
-            perror("dup2 stdout failed in child2");
-            exit(EXIT_FAILURE);
-        }
-    }
+		if (dup2(ctx->outfile, STDOUT_FILENO) == -1)
+			perror_n_exit("dup2 stdout failed in child2", EXIT_FAILURE);
+	}
 	else
 	{
-        if (dup2(STDERR_FILENO, STDOUT_FILENO) == -1)
-		{
-            perror("dup2 fallback to stderr failed in child2");
-            exit(EXIT_FAILURE);
-        }
+		if (dup2(STDERR_FILENO, STDOUT_FILENO) == -1)
+			perror_n_exit("dup2 failed in child2", EXIT_FAILURE);
 		exit(EXIT_FAILURE);
-    }
+	}
 	if (ctx->fd[1] >= 0)
 		close(ctx->fd[1]);
 	if (*ctx->av[3] == '\0')
@@ -92,56 +82,31 @@ void	child_2(t_pipex *ctx)
  */
 int	pipex(t_pipex *ctx)
 {
-    pid_t	pid_child1;
-    pid_t	pid_child2;
+	pid_t	pid_child1;
+	pid_t	pid_child2;
 
-    pid_child1 = fork();
-    if (pid_child1 == -1)
+	pid_child1 = fork();
+	if (pid_child1 == -1)
 	{
 		ft_putstr_fd("Fork failed for child 1\n", STDERR_FILENO);
 		exit(EXIT_FAILURE);
 	}
-    if (pid_child1 == 0)
-        child_1(ctx);
-
-    pid_child2 = fork();
-    if (pid_child2 == -1)
-    {
+	if (pid_child1 == 0)
+		child_1(ctx);
+	pid_child2 = fork();
+	if (pid_child2 == -1)
+	{
 		ft_putstr_fd("Fork failed for child 2\n", STDERR_FILENO);
 		exit(EXIT_FAILURE);
 	}
-    if (pid_child2 == 0)
-        child_2(ctx);
-
-    close(ctx->fd[0]);
-    close(ctx->fd[1]);
-
-    // Wait for first child
+	if (pid_child2 == 0)
+		child_2(ctx);
+	close(ctx->fd[0]);
+	close(ctx->fd[1]);
 	waitpid(pid_child1, &ctx->status1, 0);
-	/*if (WIFEXITED(ctx->status1))
-	{
-		int status = WEXITSTATUS(ctx->status1);
-		fprintf(stderr, "child1 EXITED with STATUS: %d\n", status);
-	} else if (WIFSIGNALED(ctx->status1)) {
-		fprintf(stderr, "child1 TERMINATED by SIGNAL: %d (%s)\n",
-				WTERMSIG(ctx->status1), strsignal(WTERMSIG(ctx->status1)));
-	}*/
-
-	// Wait for second child
 	waitpid(pid_child2, &ctx->status2, 0);
-	/*if (WIFEXITED(ctx->status2)) {
-		int status = WEXITSTATUS(ctx->status2);
-		//fprintf(stderr, "child2 EXITED with STATUS: %d\n", status);
-	} else if (WIFSIGNALED(ctx->status2)) {
-		//fprintf(stderr, "child2 TERMINATED by SIGNAL: %d (%s)\n",
-		WTERMSIG(ctx->status2), strsignal(WTERMSIG(ctx->status2)));
-	}*/
-
-
-    // Return the exit status of the second child
-    return (exit_status(ctx->status2));
+	return (exit_status(ctx->status2));
 }
-
 
 /**
  * @brief Initializes the pipex context.
@@ -168,19 +133,16 @@ void	init_pipex(t_pipex *ctx, int argc, char **argv, char **envp)
 	if (ctx->infile == -1)
 	{
 		perror(argv[1]);
-    }
+	}
 	ctx->outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (ctx->outfile == -1)
 	{
 		if (errno == EACCES)
-			perror(argv[4]); // tested
+			perror(argv[4]);
 		ctx->outfile = -1;
 	}
 	if (pipe(ctx->fd) == -1)
-	{
-		perror("Pipe creation faield");
-		exit(EXIT_FAILURE);
-	}
+		perror_n_exit("Pipe creation faield", EXIT_FAILURE);
 }
 
 /**

@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/19 00:12:02 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/19 15:01:35 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,29 +29,18 @@ void	execute_command(char *av, t_pipex *ctx)
 
 	cmd.args = ft_split(av, ' ');
 	if (!cmd.args || !cmd.args[0])
-	{
-		ft_putstr_fd(cmd.args[0], STDERR_FILENO);
-		ft_putstr_fd(" : command not found\n", STDERR_FILENO);
-		//perror(cmd.args[0]);
-		exit(127);
-	}
-
+		pcustom_error_n_exit(cmd.args[0], " : command not found\n", 127);
 	cmd.cmd = cmd.args[0];
-
-	// Check if the command is a full path (contains '/')
-    if (ft_strchr(cmd.cmd, '/'))
-	{
-        // Use the command directly as a path
-        cmd.path = ft_strdup(cmd.cmd);
-	}
+	if (ft_strchr(cmd.cmd, '/'))
+		cmd.path = ft_strdup(cmd.cmd);
 	else
 	{
 		cmd.path = get_path(cmd.cmd, ctx->envp);
 		if (!cmd.path)
 		{
 			ft_putstr_fd(cmd.cmd, STDERR_FILENO);
-			ft_putstr_fd(": command not found\n", STDERR_FILENO);
 			free_arr_memory(cmd.args);
+			ft_putstr_fd(": command not found\n", STDERR_FILENO);
 			exit(127);
 		}
 	}

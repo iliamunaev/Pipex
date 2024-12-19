@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 17:22:35 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/18 22:18:11 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/19 14:55:31 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,28 +21,55 @@
 # include <stdio.h>		// perror
 # include <sys/wait.h>	// waitpid
 # include "libft/libft.h"
-#include <string.h>
 
 // Structures
+/**
+ * @brief Represents the main context for the pipex program.
+ *
+ * Contains all necessary data for managing pipes, file descriptors,
+ * environment variables, and command-line arguments.
+ *
+ * Fields:
+ * - `fd[2]`:   Pipe file descriptors (`fd[0]` for reading, `fd[1]` for writing).
+ * - `infile`:  File descriptor for the input file,
+ *              used as input to the first command.
+ * - `outfile`: File descriptor for the output file, used for the final output.
+ * - `envp`:    Array of strings representing environment variables.
+ * - `av`:      Array of strings representing the command-line arguments.
+ * - `status1`: Exit status of the first child process.
+ * - `status2`: Exit status of the second child process.
+ * - `argc`:    The total number of command-line arguments.
+ */
 typedef struct s_pipex
 {
-	int		fd[2];		// Pipe file descriptors (read and write ends)
-	int		infile;		// File descriptor for the input file
-	int		outfile;	// File descriptor for the output file
-	char	**envp;		// Environment variables
-	char	**av;		// Command-line arguments
-	int		status1;	// Exit status for child 1
-	int		status2;	// Exit status for child 2
-	int		argc;		// Argument count
+	int		fd[2];
+	int		infile;
+	int		outfile;
+	char	**envp;
+	char	**av;
+	int		status1;
+	int		status2;
+	int		argc;
 }	t_pipex;
 
+/**
+ * @brief Represents an individual command.
+ *
+ * Includes its name, arguments, and resolved executable path.
+ *
+ * Fields:
+ * - `cmd`:  The name of the command.
+ * - `args`: Array of strings representing arguments to the command.
+ * - `path`: The full path to the command's executable.
+ */
 typedef struct s_command
 {
-	char	*cmd; // Command name
-	char	**args; // Command arguments
-	char	*path; // Full path to the executable
+	char	*cmd;
+	char	**args;
+	char	*path;
 }	t_command;
 
+// Functions
 // pipe creators and executors
 void	init_pipex(t_pipex *ctx, int argc, char **argv, char **envp);
 int		pipex(t_pipex *ctx);
@@ -53,6 +80,7 @@ void	execute_command(char *av, t_pipex *ctx);
 // error handlers
 int		exit_status(int status);
 int		perror_n_exit(char *msg, int e);
+int	pcustom_error_n_exit(char *msg1, char *msg2, int e);
 
 // memory leak handlers
 void	free_arr_memory(char **paths);
