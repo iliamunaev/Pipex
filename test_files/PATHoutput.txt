@@ -1,10 +1,4 @@
 XDG_SESSION_PATH=/org/freedesktop/DisplayManager/Session11
-XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons
 FT_HOOK_PATHNAME=login-user.d
-ALSA_CONFIG_PATH=/usr/share/alsa/alsa-flatpak.conf
-GI_TYPELIB_PATH=/app/lib/girepository-1.0
 XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0
-SANDBOX_LD_LIBRARY_PATH=/app/lib
-LD_LIBRARY_PATH=/app/lib
-GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/usr/lib/extensions/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0
-PATH=/app/bin:/app/bin:/app/bin:/usr/bin:/home/imunaev-/.var/app/com.visualstudio.code/data/node_modules/bin
+PATH=/home/imunaev-/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin

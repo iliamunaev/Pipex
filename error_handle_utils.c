@@ -6,42 +6,32 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 16:17:54 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/19 14:55:16 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/19 15:30:24 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
 /**
- * @brief Retrieves the exit status of a process.
+ * exit_status - Determines the exit status of a child process.
  *
- * If the process exited normally, it returns the exit code.
- * Otherwise, it returns the raw status code.
+ * This function analyzes the status of a child process to determine
+ * the exit code. If the process exited normally, it returns the exit
+ * code using WEXITSTATUS. Otherwise, it returns the signal number
+ * that caused the termination using WTERMSIG.
  *
- * @param status The status code returned by waitpid.
- * @return The processed exit status.
+ * @status: The status returned by waitpid() or wait().
+ *
+ * Return: The exit code if the process exited normally, or the signal
+ * number if it was terminated by a signal.
  */
- /*
 int	exit_status(int status)
 {
-	int	exit_status;
-
 	if (WIFEXITED(status))
-		exit_status = WEXITSTATUS(status);
+		return (WEXITSTATUS(status));
 	else
-		exit_status = status;
-	return (exit_status);
+		return (WTERMSIG(status));
 }
-*/
-
-int	exit_status(int status)
-{
-	if (WIFEXITED(status)) // This macro returns a nonzero value if the child process terminated normally with exit or _exit.
-		return (WEXITSTATUS(status)); // If WIFEXITED is true of status, this macro returns the low-order 8 bits of the exit status value from the child process.
-	else
-		return (WTERMSIG(status)); // Return signal code (128 + signal) If WIFSIGNALED is true of status, this macro returns the signal number of the signal that terminated the child process.
-}
-
 
 /**
  * @brief Prints an error message and exits the program.

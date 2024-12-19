@@ -1,59 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   find_cmd_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 18:22:01 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/19 15:01:35 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/19 15:17:49 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-/**
- * @brief Parses and executes a command using execve.
- *
- * Splits the command string into arguments,
- * retrieves the full path of the command,
- * and executes it using execve.
- * Handles errors such as missing commands or permission issues.
- *
- * @param av  The command string (e.g., "ls -l").
- * @param ctx The pipex context containing the environment variables.
- */
-void	execute_command(char *av, t_pipex *ctx)
-{
-	t_command	cmd;
-
-	cmd.args = ft_split(av, ' ');
-	if (!cmd.args || !cmd.args[0])
-		pcustom_error_n_exit(cmd.args[0], " : command not found\n", 127);
-	cmd.cmd = cmd.args[0];
-	if (ft_strchr(cmd.cmd, '/'))
-		cmd.path = ft_strdup(cmd.cmd);
-	else
-	{
-		cmd.path = get_path(cmd.cmd, ctx->envp);
-		if (!cmd.path)
-		{
-			ft_putstr_fd(cmd.cmd, STDERR_FILENO);
-			free_arr_memory(cmd.args);
-			ft_putstr_fd(": command not found\n", STDERR_FILENO);
-			exit(127);
-		}
-	}
-	if (execve(cmd.path, cmd.args, ctx->envp) == -1)
-	{
-		free(cmd.path);
-		free_arr_memory(cmd.args);
-		if (errno == EACCES)
-			exit(126);
-		else
-			exit(EXIT_FAILURE);
-	}
-}
 
 /**
  * @brief Searches for the full path of a command in a list of directories.

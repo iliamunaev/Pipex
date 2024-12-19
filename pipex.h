@@ -6,7 +6,7 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 17:22:35 by imunaev-          #+#    #+#             */
-/*   Updated: 2024/12/19 14:55:31 by imunaev-         ###   ########.fr       */
+/*   Updated: 2024/12/19 15:25:17 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	execute_command(char *av, t_pipex *ctx);
 // error handlers
 int		exit_status(int status);
 int		perror_n_exit(char *msg, int e);
-int	pcustom_error_n_exit(char *msg1, char *msg2, int e);
+int		pcustom_error_n_exit(char *msg1, char *msg2, int e);
 
 // memory leak handlers
 void	free_arr_memory(char **paths);
@@ -90,5 +90,10 @@ void	cleanup_pipex(t_pipex *ctx);
 char	*get_path(char *cmd, char **envp);
 char	**get_path_values(char **envp);
 char	*find_command_in_paths(char **paths, char *cmd);
+
+// cmd executors
+void	parse_and_resolve_command(char *av, t_pipex *ctx, t_command *cmd);
+void	execute_resolved_command(t_command *cmd, t_pipex *ctx);
+void	execute_command(char *av, t_pipex *ctx);
 
 #endif
